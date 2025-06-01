@@ -136,7 +136,7 @@ $persen_daging_terdistribusi = ($total_daging > 0) ? ($jumlah_daging_sudah_diamb
                     </div>
                     <div class="card-body">
                         <p>Melihat dan mengelola status pengambilan daging.</p>
-                        <a href="manage_meat_distribution.php" class="btn btn-primary">Kelola Pembagian Daging</a>
+                        <a href="../admin/meat_distribution.php" class="btn btn-primary">Kelola Pembagian Daging</a>
                     </div>
                 </div>
             </div>
@@ -149,7 +149,7 @@ $persen_daging_terdistribusi = ($total_daging > 0) ? ($jumlah_daging_sudah_diamb
                     </div>
                     <div class="card-body">
                         <p>Melihat dan menginput laporan keuangan qurban.</p>
-                        <a href="financial_report.php" class="btn btn-primary">Lihat Laporan</a>
+                        <a href="../admin/financial_report.php" class="btn btn-primary">Lihat Laporan</a>
                     </div>
                 </div>
             </div>

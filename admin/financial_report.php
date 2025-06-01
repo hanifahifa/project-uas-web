@@ -4,7 +4,7 @@ include '../db.php';
 session_start();
 
 // Pastikan hanya admin yang dapat mengakses halaman ini
-if (!isset($_SESSION['user_nik']) || $_SESSION['role'] != 'admin') {
+if (!isset($_SESSION['user_nik']) || $_SESSION['role'] != 'admin'&& $_SESSION['role'] != 'panitia') {
     header('Location: ../login.php');
     exit;
 }
