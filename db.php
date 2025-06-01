@@ -26,4 +26,3 @@ try {
     echo 'Connection failed: ' . $e->getMessage();
 }
 ?>
->>>>>>> ab62da35eb63e7c2f4ea160ddd8babd3ec785d05
