@@ -85,7 +85,7 @@ $persen_daging_terdistribusi = ($total_daging > 0) ? ($jumlah_daging_sudah_diamb
 
     <div class="container-dashboard container">
         <!-- Tombol Kembali ke Dashboard -->
-        <a href="../admin/dashboard_admin.php" class="btn btn-outline-primary mb-4">&lt; Kembali ke Dashboard Admin</a>
+        <a href="../logout.php" class="btn btn-outline-primary mb-4">&lt; logout</a>
 
         <!-- Judul Dashboard -->
         <h2>Dashboard Panitia</h2>
@@ -114,7 +114,7 @@ $persen_daging_terdistribusi = ($total_daging > 0) ? ($jumlah_daging_sudah_diamb
                         <h5>Statistik Qurban</h5>
                     </div>
                     <div class="card-body">
-                        <h6>Total Berat Hewan Qurban yang Diterima:</h6>
+                        <h6>Total Berat Hewan Qurban yang Diterima tiap orang:</h6>
                         <p><?php echo $total_daging; ?> Kg</p>
 
                         <h6>Total Berat Daging yang Sudah Diterima oleh Warga:</h6>

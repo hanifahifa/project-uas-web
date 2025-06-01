@@ -4,10 +4,13 @@ include '../db.php';
 session_start();
 
 // Pastikan hanya admin yang dapat mengakses halaman ini
-if (!isset($_SESSION['user_nik']) || $_SESSION['role'] != 'admin'&& $_SESSION['role'] != 'panitia') {
+if (!isset($_SESSION['user_nik']) || ($_SESSION['role'] != 'admin' && $_SESSION['role'] != 'panitia')) {
     header('Location: ../login.php');
     exit;
 }
+
+// Menentukan halaman dashboard yang tepat berdasarkan peran
+$dashboard_url = ($_SESSION['role'] == 'admin') ? '../admin/dashboard_admin.php' : '../panitia/dashboard_panitia.php';
 
 // Mengambil data keuangan masuk
 $sql_masuk = "SELECT * FROM keuangan_masuk ORDER BY tanggal DESC";
@@ -38,10 +41,11 @@ $data_keluar = $stmt_keluar->fetchAll();
       margin-top: 20px;
     }
   </style>
-  <a href="../admin/dashboard_admin.php" class="btn btn-secondary mb-4">&larr; Kembali ke Dashboard Admin</a>
-
 </head>
 <body>
+
+<!-- Tombol Kembali yang Mengarah ke Dashboard Sesuai Role -->
+<a href="<?= $dashboard_url ?>" class="btn btn-secondary mb-4">&larr; Kembali ke Dashboard</a>
 
 <div class="container">
     <h1>Laporan Keuangan</h1>

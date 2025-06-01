@@ -8,6 +8,9 @@ if (!isset($_SESSION['user_nik']) || ($_SESSION['role'] != 'admin' && $_SESSION[
     exit;
 }
 
+// Menentukan halaman dashboard yang tepat berdasarkan peran
+$dashboard_url = ($_SESSION['role'] == 'admin') ? '../admin/dashboard_admin.php' : '../panitia/dashboard_panitia.php';
+
 // Mengambil data pembagian daging dengan JOIN ke tabel users
 $sql = "
     SELECT 
@@ -25,7 +28,6 @@ $sql = "
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $data_pembagian = $stmt->fetchAll();
-
 ?>
 
 <!DOCTYPE html>
@@ -48,13 +50,12 @@ $data_pembagian = $stmt->fetchAll();
 <body>
 
 <div class="container">
-    <!-- Tombol Kembali ke Dashboard Admin -->
-    <a href="../admin/dashboard_admin.php" class="btn btn-secondary mb-4">&larr; Kembali ke Dashboard Admin</a>
+    <!-- Tombol Kembali ke Dashboard Sesuai Role -->
+    <a href="<?= $dashboard_url ?>" class="btn btn-secondary mb-4">&larr; Kembali ke Dashboard</a>
 
     <h1>Distribution of Meat</h1>
     <p>Lihat dan kelola distribusi daging qurban.</p>
 
-    
     <!-- Tabel Pembagian Daging -->
     <div class="card">
         <div class="card-header bg-primary text-white">
