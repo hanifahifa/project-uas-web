@@ -2,173 +2,139 @@
 include 'db.php';
 session_start();
 
-// Proses login ketika form disubmit
 if (isset($_POST['submit'])) {
-    $nik = $_POST['nik'];  // Menggunakan NIK sebagai login
+    $nik = $_POST['nik'];
     $password = $_POST['password'];
 
-    // Ambil data pengguna berdasarkan NIK
     $sql = "SELECT * FROM users WHERE nik = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$nik]);
     $user = $stmt->fetch();
 
-    // Pastikan user ditemukan dan password sesuai
     if ($user) {
-        // Verifikasi password (plaintext)
         if ($password === $user['password']) {
-            // Set session untuk NIK dan role
             $_SESSION['user_nik'] = $user['nik'];
             $_SESSION['role'] = $user['role'];
 
-            // Redirect berdasarkan role
-            if ($user['role'] == 'admin') {
-                header('Location: dashboard_admin.php');
-            } elseif ($user['role'] == 'warga') {
-                header('Location: dashboard_warga.php');
-            } elseif ($user['role'] == 'panitia') {
-                header('Location: dashboard_panitia.php');
-            } elseif ($user['role'] == 'berqurban') {
-                header('Location: dashboard_berqurban.php');
+            switch ($user['role']) {
+                case 'admin': header('Location: dashboard_admin.php'); break;
+                case 'warga': header('Location: dashboard_warga.php'); break;
+                case 'panitia': header('Location: dashboard_panitia.php'); break;
+                case 'berqurban': header('Location: dashboard_berqurban.php'); break;
             }
         } else {
-            echo "<div class='error-message'>Password salah!</div>";
+            $error = "Password salah!";
         }
     } else {
-        echo "<div class='error-message'>ID tidak ditemukan!</div>";
+        $error = "ID tidak ditemukan!";
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sistem Qurban</title>
-    <style>
-        /* Global Styling */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f4f7fc;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Sistem Qurban</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #BFD8B8, #F0F5EC);
+      background-image: url('https://images.unsplash.com/photo-1704859597974-cb64079ef7e6?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); /* Gambar suasana Idul Adha */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(5px);
+    }
 
-        /* Container Styling untuk Login */
-        .container-login {
-            width: 100%;
-            max-width: 400px;
-            margin: 50px auto;
-            background-color: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            padding: 25px;
-            text-align: left;
-        }
+    .login-card {
+      background: linear-gradient(to bottom right, rgba(255,255,255,0.95), rgba(245, 255, 245, 0.9));
+      border-radius: 18px;
+      padding: 40px;
+      box-shadow: 0 10px 25px rgba(26, 77, 46, 0.3);
+      max-width: 420px;
+      width: 100%;
+    }
 
-        /* Heading Styling */
-        h2 {
-            color: #007aff;
-            font-size: 24px;
-            margin-bottom: 30px;
-            font-weight: 600;
-        }
+    .login-card h3 {
+      color: #1A4D2E;
+      font-weight: 700;
+      margin-bottom: 25px;
+      text-align: center;
+    }
 
-        /* Input Fields Styling */
-        input[type="text"],
-        input[type="password"],
-        input[type="submit"] {
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0;
-            border-radius: 10px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s ease-in-out;
-        }
+    .btn-elegant {
+      background: linear-gradient(to right, #1A4D2E, #3B7A57);
+      color: white;
+      font-weight: 600;
+      border: none;
+      transition: all 0.3s ease;
+    }
 
-        input[type="submit"] {
-            background-color: #007aff;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out;
-        }
+    .btn-elegant:hover {
+      background: linear-gradient(to right, #164A2F, #5AA469);
+    }
 
-        input[type="submit"]:hover {
-            background-color: #0056b3;
-        }
+    .form-control:focus {
+      border-color: #D4AF37;
+      box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
+    }
 
-        /* Error Message Styling */
-        .error-message {
-            background-color: #dc3545;
-            color: white;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 5px;
-            text-align: center;
-            font-weight: 600;
-        }
+    .error-message {
+      background-color: #dc3545;
+      color: white;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 15px;
+    }
 
-        /* Back Button Styling */
-        .back-btn {
-            font-size: 16px;
-            color: #007aff;
-            text-decoration: none;
-            margin-bottom: 20px;
-            display: inline-block;
-            transition: color 0.3s ease-in-out;
-        }
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 15px;
+      color: #1A4D2E;
+      text-decoration: none;
+    }
 
-        .back-btn:hover {
-            color: #0056b3;
-        }
+    .back-btn:hover {
+      text-decoration: underline;
+    }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container-login {
-                margin: 20px auto;
-                padding: 20px;
-                max-width: 90%;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container-login {
-                padding: 15px;
-                max-width: 95%;
-            }
-        }
-    </style>
+    @media (max-width: 576px) {
+      .login-card {
+        padding: 30px;
+        margin: 15px;
+      }
+    }
+  </style>
 </head>
-
 <body>
 
-    <div class="container-login">
-        <!-- Tombol Back -->
-        <a href="index.html" class="back-btn">&lt; Back</a>
+  <div class="login-card">
+    <a href="index.html" class="back-btn">&larr; Back to Dashboard</a>
+    <h3>QURBANA</h3>
 
-        <h2>Login - Sistem Qurban</h2>
+    <?php if (isset($error)) : ?>
+      <div class="error-message"><?= $error ?></div>
+    <?php endif; ?>
 
-        <form method="POST" action="">
-            <div class="form-group">
-                <label for="nik">NIK</label>
-                <input type="text" id="nik" name="nik" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <input type="submit" name="submit" value="Login">
-        </form>
-    </div>
+    <form method="POST">
+      <div class="mb-3">
+        <label for="nik" class="form-label">NIK</label>
+        <input type="text" class="form-control" id="nik" name="nik" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" name="password" required>
+      </div>
+      <button type="submit" name="submit" class="btn btn-elegant w-100">Login</button>
+    </form>
+  </div>
 
 </body>
-
 </html>
