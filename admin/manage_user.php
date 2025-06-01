@@ -1,9 +1,12 @@
 <?php
-include('db.php'); // Menghubungkan ke file db.php
+include('../db.php'); // Menghubungkan ke file db.php
 
 // Query untuk mengambil semua data pengguna
 $query = "SELECT * FROM users";
-$result = $conn->query($query);
+
+// Menyiapkan dan mengeksekusi query menggunakan PDO
+$stmt = $pdo->prepare($query);
+$stmt->execute();
 
 // Menampilkan header halaman
 echo '<!DOCTYPE html>
@@ -13,15 +16,17 @@ echo '<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manajemen Pengguna</title>
     <link rel="stylesheet" href="styles.css"> <!-- Anda bisa menambahkan file CSS untuk styling -->
+    
 </head>
 <body>
+
     <div class="container">
         <h1>Manajemen Pengguna</h1>
         <p>Kelola pengguna yang terdaftar dalam sistem.</p>
-        <a href="add_user.php"><button>Tambah Pengguna</button></a>'; // Button untuk menambah pengguna
+        <a href="register.php"><button>Tambah Pengguna</button></a>'; // Button untuk menambah pengguna
 
 // Jika ada data pengguna
-if ($result->num_rows > 0) {
+if ($stmt->rowCount() > 0) {
     echo '<table border="1">
             <thead>
                 <tr>
@@ -36,7 +41,7 @@ if ($result->num_rows > 0) {
             <tbody>';
     
     // Menampilkan setiap pengguna
-    while ($row = $result->fetch_assoc()) {
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         echo '<tr>
                 <td>' . $row['nik'] . '</td>
                 <td>' . $row['name'] . '</td>
@@ -55,9 +60,10 @@ if ($result->num_rows > 0) {
     echo '<p>Tidak ada pengguna yang terdaftar.</p>';
 }
 
+// Tambahkan tombol "Back" yang mengarahkan ke dashboard_admin.php
+echo '<a href="dashboard_admin.php"><button>Kembali ke Dashboard</button></a>';
+
 echo '</div>
 </body>
 </html>';
-
-$conn->close();
 ?>

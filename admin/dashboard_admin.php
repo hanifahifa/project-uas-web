@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'db.php';
+include '../db.php';
 
 // Pastikan pengguna sudah login dan memiliki peran 'admin'
 if (!isset($_SESSION['user_nik']) || $_SESSION['role'] !== 'admin') {
@@ -235,12 +235,11 @@ if ($total_daging > 0) {
     <nav class="navbar navbar-expand-lg">
         <a class="navbar-brand" href="dashboard_admin.php">Sistem Qurban</a>
         <div class="navbar-nav">
-            <a href="logout.php" class="nav-link">Logout</a>
+            <a href="../logout.php" class="nav-link">Logout</a>
         </div>
     </nav>
 
     <div class="container-dashboard">
-        <a href="index.html" class="back-btn">&lt; Back</a>
 
         <h2>Dashboard Admin</h2>
 
@@ -291,7 +290,7 @@ if ($total_daging > 0) {
                         <div class="card-body">
                             <h5 class="card-title">Pembagian Daging</h5>
                             <p class="card-text">Lihat dan kelola distribusi daging qurban.</p>
-                            <a href="distribute_meat.php" class="btn">Kelola Pembagian</a>
+                            <a href="meat_distribution.php" class="btn">Kelola Pembagian</a>
                         </div>
                     </div>
                 </div>

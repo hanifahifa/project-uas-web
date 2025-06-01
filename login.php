@@ -16,11 +16,11 @@ if (isset($_POST['submit'])) {
             $_SESSION['user_nik'] = $user['nik'];
             $_SESSION['role'] = $user['role'];
 
-            switch ($user['role']) {
-                case 'admin': header('Location: dashboard_admin.php'); break;
-                case 'warga': header('Location: dashboard_warga.php'); break;
-                case 'panitia': header('Location: dashboard_panitia.php'); break;
-                case 'berqurban': header('Location: dashboard_berqurban.php'); break;
+             switch ($user['role']) {
+                case 'admin': header('Location: admin/dashboard_admin.php'); break;  // Redirect ke dashboard admin
+                case 'warga': header('Location: warga/dashboard_warga.php'); break;  // Redirect ke dashboard warga
+                case 'panitia': header('Location: panitia/dashboard_panitia.php'); break;  // Redirect ke dashboard panitia
+                case 'berqurban': header('Location: berqurban/dashboard_berqurban.php'); break;  // Redirect ke dashboard berqurban
             }
         } else {
             $error = "Password salah!";

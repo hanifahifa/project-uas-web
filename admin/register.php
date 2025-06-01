@@ -1,6 +1,5 @@
-<<<<<<< HEAD
 <?php
-include 'db.php';
+include '../db.php';
 session_start();
 
 if (isset($_POST['submit'])) {
@@ -38,7 +37,7 @@ if (isset($_POST['submit'])) {
 
     <div class="container-register">
         <!-- Tombol Back dengan simbol < -->
-        <a href="index.html" class="back-btn">&lt; Back</a>
+        <a href="manage_user.php" class="back-btn">&lt; Back</a>
 
         <h2>Registrasi - Sistem Qurban</h2>
 
@@ -93,50 +92,3 @@ if (isset($_POST['submit'])) {
 </body>
 
 </html>
-=======
-<?php
-include 'db.php';
-
-if (isset($_POST['submit'])) {
-    $nama = $_POST['nama'];
-    $NIK = $_POST['NIK'];
-    $alamat = $_POST['alamat'];
-    $no_hp = $_POST['no_hp'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $role = $_POST['role'];
-
-    $sql = "INSERT INTO users (nama, NIK, alamat, no_hp, password, role) VALUES (?, ?, ?, ?, ?, ?)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$nama, $NIK, $alamat, $no_hp, $password, $role]);
-
-    // Ambil ID yang baru saja diinsert
-    $last_id = $pdo->lastInsertId();
-
-    echo "Registrasi berhasil! ID Anda:  <br>" . $last_id. "<br>";
-    echo "Silakan login dengan ID dan password Anda.";
-
-}
-?>
-
-<form method="POST" action="">
-    Nama: <input type="text" name="nama" required><br>
-    NIK: <input type="text" name="NIK" required><br>
-    Alamat: <input type="text" name="alamat" required><br>
-    No. HP: <input type="text" name="no_hp" required><br>
-    Password: <input type="password" name="password" required><br>
-    Role:
-    <select name="role" required>
-        <option value="admin">Admin</option>
-        <option value="warga">Warga</option>
-        <option value="panitia">Panitia</option>
-        <option value="berqurban">Berqurban</option>
-    </select><br>
-    <input type="submit" name="submit" value="Register">
-    <!-- Tombol Back -->
-    <a href="index.html">
-        <button type="button">Back to dashboard</button>
-    </a>
-</form>
-
-
->>>>>>> ab62da35eb63e7c2f4ea160ddd8babd3ec785d05
