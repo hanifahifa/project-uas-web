@@ -14,7 +14,7 @@ include 'header.php';
     <nav class="navbar navbar-expand-lg">
         <a class="navbar-brand" href="dashboard_admin.php">Sistem Qurban</a>
         <div class="navbar-nav">
-            <a href="logout.php" class="nav-link">Logout</a>
+            <a href="../logout.php" class="nav-link">Logout</a>
         </div>
     </nav>
 
