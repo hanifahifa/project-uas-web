@@ -273,7 +273,7 @@ if ($total_daging > 0) {
                         <div class="card-body">
                             <h5 class="card-title">Manajemen Pengguna</h5>
                             <p class="card-text">Kelola pengguna yang terdaftar dalam sistem.</p>
-                            <a href="manage_users.php" class="btn">Lihat Pengguna</a>
+                            <a href="manage_user.php" class="btn">Lihat Pengguna</a>
                         </div>
                     </div>
                 </div>

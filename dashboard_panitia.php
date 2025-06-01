@@ -2,7 +2,7 @@
 session_start();
 
 // Cek apakah user sudah login dan apakah dia panitia
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'panitia') {
+if (!isset($_SESSION['user_nik']) || $_SESSION['role'] != 'panitia') {
     header('Location: login.php');  // Redirect ke halaman login jika bukan panitia
     exit;
 }

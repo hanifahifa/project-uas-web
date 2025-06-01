@@ -2,7 +2,7 @@
 session_start();
 
 // Pastikan hanya pengguna dengan role "berqurban" yang bisa mengakses halaman ini
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'berqurban') {
+if (!isset($_SESSION['user_nik']) || $_SESSION['role'] != 'berqurban') {
     header('Location: login.php');  // Redirect ke login jika role bukan "berqurban"
     exit;
 }
