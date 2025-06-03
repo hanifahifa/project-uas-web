@@ -21,7 +21,7 @@ if (isset($_POST['submit'])) {
           header('Location: admin/dashboard_admin.php');
           break;  // Redirect ke dashboard admin
         case 'warga':
-          header('Location: warga/dashboard_warga.php');
+          header(header: 'Location: warga/dashboard_warga.php');
           break;  // Redirect ke dashboard warga
         case 'panitia':
           header('Location: panitia/dashboard_panitia.php');

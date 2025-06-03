@@ -60,7 +60,7 @@ $persen_daging_terdistribusi = ($total_daging > 0) ? ($jumlah_daging_sudah_diamb
         }
 
         .card-header {
-            background-color: #007bff;
+            background-color:rgb(13, 78, 23);
             color: white;
         }
 
@@ -198,7 +198,7 @@ $persen_daging_terdistribusi = ($total_daging > 0) ? ($jumlah_daging_sudah_diamb
 
         <!-- Footer -->
         <footer>
-            <p>&copy; 2025 Sistem Qurban. All rights reserved.</p>
+            <p>&copy; 2025 QURBANA: Sistem Qurban RT 001.</p>
         </footer>
     </div>
 
