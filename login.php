@@ -3,45 +3,55 @@ include 'db.php';
 session_start();
 
 if (isset($_POST['submit'])) {
-    $nik = $_POST['nik'];
-    $password = $_POST['password'];
+  $nik = $_POST['nik'];
+  $password = $_POST['password'];
 
-    $sql = "SELECT * FROM users WHERE nik = ?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$nik]);
-    $user = $stmt->fetch();
+  $sql = "SELECT * FROM users WHERE nik = ?";
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute([$nik]);
+  $user = $stmt->fetch();
 
-    if ($user) {
-        if ($password === $user['password']) {
-            $_SESSION['user_nik'] = $user['nik'];
-            $_SESSION['role'] = $user['role'];
+  if ($user) {
+    if ($password === $user['password']) {
+      $_SESSION['user_nik'] = $user['nik'];
+      $_SESSION['role'] = $user['role'];
 
-             switch ($user['role']) {
-                case 'admin': header('Location: admin/dashboard_admin.php'); break;  // Redirect ke dashboard admin
-                case 'warga': header('Location: warga/dashboard_warga.php'); break;  // Redirect ke dashboard warga
-                case 'panitia': header('Location: panitia/dashboard_panitia.php'); break;  // Redirect ke dashboard panitia
-                case 'berqurban': header('Location: berqurban/dashboard_berqurban.php'); break;  // Redirect ke dashboard berqurban
-            }
-        } else {
-            $error = "Password salah!";
-        }
+      switch ($user['role']) {
+        case 'admin':
+          header('Location: admin/dashboard_admin.php');
+          break;  // Redirect ke dashboard admin
+        case 'warga':
+          header('Location: warga/dashboard_warga.php');
+          break;  // Redirect ke dashboard warga
+        case 'panitia':
+          header('Location: panitia/dashboard_panitia.php');
+          break;  // Redirect ke dashboard panitia
+        case 'berqurban':
+          header('Location: berqurban/dashboard_berqurban.php');
+          break;  // Redirect ke dashboard berqurban
+      }
     } else {
-        $error = "ID tidak ditemukan!";
+      $error = "Password salah!";
     }
+  } else {
+    $error = "ID tidak ditemukan!";
+  }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login - Sistem Qurban</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
     body {
       background: linear-gradient(to bottom right, #BFD8B8, #F0F5EC);
-      background-image: url('https://images.unsplash.com/photo-1704859597974-cb64079ef7e6?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); /* Gambar suasana Idul Adha */
+      background-image: url('https://images.unsplash.com/photo-1704859597974-cb64079ef7e6?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+      /* Gambar suasana Idul Adha */
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -53,7 +63,7 @@ if (isset($_POST['submit'])) {
     }
 
     .login-card {
-      background: linear-gradient(to bottom right, rgba(255,255,255,0.95), rgba(245, 255, 245, 0.9));
+      background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.95), rgba(245, 255, 245, 0.9));
       border-radius: 18px;
       padding: 40px;
       box-shadow: 0 10px 25px rgba(26, 77, 46, 0.3);
@@ -113,13 +123,14 @@ if (isset($_POST['submit'])) {
     }
   </style>
 </head>
+
 <body>
 
   <div class="login-card">
     <a href="index.html" class="back-btn">&larr; Back to Dashboard</a>
     <h3>QURBANA</h3>
 
-    <?php if (isset($error)) : ?>
+    <?php if (isset($error)): ?>
       <div class="error-message"><?= $error ?></div>
     <?php endif; ?>
 
@@ -137,4 +148,5 @@ if (isset($_POST['submit'])) {
   </div>
 
 </body>
+
 </html>

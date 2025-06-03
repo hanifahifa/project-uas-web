@@ -16,7 +16,6 @@ echo '<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manajemen Pengguna</title>
     <link rel="stylesheet" href="styles.css"> <!-- Anda bisa menambahkan file CSS untuk styling -->
-    
 </head>
 <body>
 
@@ -33,7 +32,6 @@ if ($stmt->rowCount() > 0) {
                     <th>NIK</th>
                     <th>Nama</th>
                     <th>Jenis Kelamin</th>
-                    <th>Email</th>
                     <th>Role</th>
                     <th>Aksi</th>
                 </tr>
@@ -46,7 +44,6 @@ if ($stmt->rowCount() > 0) {
                 <td>' . $row['nik'] . '</td>
                 <td>' . $row['name'] . '</td>
                 <td>' . ($row['jenis_kelamin'] == 'L' ? 'Laki-laki' : 'Perempuan') . '</td>
-                <td>' . $row['email'] . '</td>
                 <td>' . ucfirst($row['role']) . '</td>
                 <td>
                     <a href="edit_user.php?nik=' . $row['nik'] . '">Edit</a> | 

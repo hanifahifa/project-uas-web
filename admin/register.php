@@ -1,36 +1,65 @@
 <?php
-include '../db.php';
 session_start();
+include('../db.php'); // Menghubungkan ke database
 
+// Cek jika form registrasi disubmit
 if (isset($_POST['submit'])) {
     $nama = $_POST['nama'];
     $NIK = $_POST['NIK'];
     $alamat = $_POST['alamat'];
-    $no_hp = $_POST['no_hp'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $jenis_kelamin = $_POST['jenis_kelamin'];
+    $password = $_POST['password'];
     $role = $_POST['role'];
 
+    // Cek apakah NIK sudah ada di database
+    $query_check_nik = "SELECT * FROM users WHERE nik = ?";
+    $stmt_check_nik = $pdo->prepare($query_check_nik);
+    $stmt_check_nik->execute([$NIK]);
+
+    if ($stmt_check_nik->rowCount() > 0) {
+        // Jika NIK sudah terdaftar, tampilkan peringatan
+        echo "<script>
+                alert('NIK sudah terdaftar. Silakan gunakan NIK lain.');
+                window.history.back();
+              </script>";
+        exit();
+    }
+
     // Masukkan data pengguna ke database
-    $sql = "INSERT INTO users (nama, NIK, alamat, no_hp, password, role) VALUES (?, ?, ?, ?, ?, ?)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$nama, $NIK, $alamat, $no_hp, $password, $role]);
+    $query = $pdo->prepare("
+        INSERT INTO users 
+            (nik, name, alamat, jenis_kelamin, password, role) 
+        VALUES 
+            (?, ?, ?, ?, ?, ?)
+    ");
+    $query->execute([ $NIK, $nama, $alamat, $jenis_kelamin, $password, $role]);
 
-    // Ambil ID yang baru saja dimasukkan
-    $last_id = $pdo->lastInsertId();
+    // Simpan NIK pengguna yang baru ditambahkan ke session
+    $_SESSION['last_nik'] = $NIK;
 
-    // Set session untuk ID yang baru
-    $_SESSION['last_id'] = $last_id;
+    // Generate QR Code setelah berhasil registrasi
+    $qr_data = "NIK: " . $NIK . " | Nama: " . $nama; // Data untuk QR Code
+    $qr_file = '../qrcodes/' . $NIK . '.png'; // Lokasi file QR Code disimpan di folder qrcodes/
+
+    // Membuat QR Code menggunakan API QR Server
+    $qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($qr_data);
+
+    // Menyimpan QR Code ke file
+    file_put_contents($qr_file, file_get_contents($qr_url));
+
+    // Redirect ke halaman dashboard pengguna
+    header("Location: manage_user.php");
+    exit();
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrasi - Sistem Qurban</title>
-    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
@@ -41,20 +70,7 @@ if (isset($_POST['submit'])) {
 
         <h2>Registrasi - Sistem Qurban</h2>
 
-        <!-- Pesan berhasil registrasi muncul di bawah judul -->
-        <?php if (isset($_SESSION['last_id'])): ?>
-            <div class="success-message">
-                Registrasi berhasil! ID Anda: <?php echo $_SESSION['last_id']; ?>. <br> Silakan login dengan ID dan password
-                Anda.
-                <a href="login.php" class="btn-login">Login Sekarang</a> <!-- Tombol untuk login -->
-
-            </div>
-            
-            <?php unset($_SESSION['last_id']); ?> <!-- Menghapus session setelah ditampilkan -->
-        <?php endif; ?>
-
-
-
+        <!-- Formulir Registrasi -->
         <form method="POST" action="">
             <div class="form-group">
                 <label for="nama">Nama</label>
@@ -69,8 +85,11 @@ if (isset($_POST['submit'])) {
                 <input type="text" id="alamat" name="alamat" required>
             </div>
             <div class="form-group">
-                <label for="no_hp">No. HP</label>
-                <input type="text" id="no_hp" name="no_hp" required>
+                <label for="jenis_kelamin">Jenis Kelamin</label>
+                <select id="jenis_kelamin" name="jenis_kelamin" required>
+                    <option value="L">Laki-laki</option>
+                    <option value="P">Perempuan</option>
+                </select>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
@@ -78,7 +97,7 @@ if (isset($_POST['submit'])) {
             </div>
             <div class="form-group">
                 <label for="role">Role</label>
-                <select name="role" required>
+                <select id="role" name="role" required>
                     <option value="admin">Admin</option>
                     <option value="warga">Warga</option>
                     <option value="panitia">Panitia</option>

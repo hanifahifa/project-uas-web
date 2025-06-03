@@ -9,8 +9,8 @@ if (!isset($_SESSION['user_nik']) || $_SESSION['role'] !== 'warga') {
 }
 
 // Ambil data dari database sesuai hak akses Warga
-$user_nik = $_SESSION['user_nik'];  // Ganti 'user_id' dengan 'user_nik'
-$query = $pdo->prepare("SELECT * FROM users WHERE nik = ?");  // Ganti 'id' dengan 'nik'
+$user_nik = $_SESSION['user_nik'];  // Menggunakan NIK sebagai identifikasi pengguna
+$query = $pdo->prepare("SELECT * FROM users WHERE nik = ?");  // Pastikan untuk menggunakan 'nik' sebagai identifikasi
 $query->execute([$user_nik]);
 $user = $query->fetch();
 
@@ -22,14 +22,13 @@ $data_qurban = $ambil_data_qurban->fetch();
 
 // Pastikan data ditemukan
 if ($data_qurban) {
-    // Ambil data jumlah hewan qurban dan QR Code
+    // Ambil data jumlah hewan qurban dan QR Code (tidak diperlukan lagi karena akan di-generate)
     $jumlah_kg = $data_qurban['jumlah_kg'];
-    $qr_code = $data_qurban['qr_code'];
 } else {
     // Jika tidak ada data, tampilkan nilai default
     $jumlah_kg = 0;
-    $qr_code = 'default_qr_code.png';  // Bisa diganti dengan path QR Code yang sesuai
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -107,13 +106,13 @@ if ($data_qurban) {
         <h2>Dashboard Warga</h2>
 
         <!-- Data Diri Pengguna -->
-        <div >
+        <div>
 
             <h5>Nama Lengkap: </h5>
             <p><?php echo $user['name']; ?></p>
 
-            <h5>Email: </h5>
-            <p><?php echo $user['email']; ?></p>
+            <h5>Alamat: </h5>
+            <p><?php echo $user['alamat']; ?></p>
             <h5>Jenis Kelamin: </h5>
             <p><?php echo ($user['jenis_kelamin'] == 'L') ? 'Laki-laki' : 'Perempuan'; ?></p>
 
@@ -141,7 +140,12 @@ if ($data_qurban) {
                         <h5>QR Code Pengambilan Daging</h5>
                     </div>
                     <div class="card-body">
-                        <img src="<?php echo $qr_code; ?>" alt="QR Code">
+                        <!-- Membuat URL untuk QR Code menggunakan NIK -->
+                        <?php
+                        $qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode("NIK: " . $user['nik']);
+                        ?>
+                        <!-- Menampilkan QR Code -->
+                        <img src="<?php echo $qr_url; ?>" alt="QR Code" width="150">
                     </div>
                 </div>
             </div>
