@@ -66,7 +66,7 @@ if ($total_daging > 0) {
 
         /* Navbar Styling */
         .navbar {
-            background-color: #007bff;
+            background-color:rgb(9, 62, 36);
             padding: 10px;
         }
 
@@ -78,7 +78,7 @@ if ($total_daging > 0) {
         }
 
         .navbar a:hover {
-            background-color: #0056b3;
+            background-color:rgb(18, 79, 15);
         }
 
         .navbar-brand {
@@ -92,13 +92,13 @@ if ($total_daging > 0) {
             max-width: 1200px;
             margin: 50px auto;
             padding: 20px;
-            background-color: #ffffff;
+            background-color:rgb(9, 62, 41);
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         h2 {
-            color: #007bff;
+            color:rgb(255, 255, 255);
             font-size: 32px;
             font-weight: 600;
             text-align: center;
@@ -107,7 +107,7 @@ if ($total_daging > 0) {
 
         .back-btn {
             font-size: 16px;
-            color: #007bff;
+            color:rgb(14, 91, 38);
             text-decoration: none;
             display: inline-block;
             margin-bottom: 20px;
@@ -115,7 +115,7 @@ if ($total_daging > 0) {
         }
 
         .back-btn:hover {
-            color: #0056b3;
+            color:rgb(16, 81, 46);
         }
 
         .dashboard-stats {
@@ -126,7 +126,7 @@ if ($total_daging > 0) {
         }
 
         .card {
-            background-color: #ffffff;
+            background-color:rgb(255, 255, 255);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
             padding: 20px;
@@ -140,7 +140,7 @@ if ($total_daging > 0) {
 
         .card h4 {
             font-size: 20px;
-            color: #007bff;
+            color:rgb(10, 78, 24);
         }
 
         .card p {
@@ -161,7 +161,7 @@ if ($total_daging > 0) {
         }
 
         .card-title {
-            color: #007bff;
+            color:rgb(12, 61, 34);
             font-size: 18px;
             font-weight: bold;
         }
@@ -174,7 +174,7 @@ if ($total_daging > 0) {
         .btn {
             display: inline-block;
             padding: 12px 30px;
-            background-color: #007bff;
+            background-color:rgb(6, 85, 41);
             color: white;
             border-radius: 12px;
             cursor: pointer;
@@ -185,7 +185,7 @@ if ($total_daging > 0) {
         }
 
         .btn:hover {
-            background-color: #0056b3;
+            background-color:rgb(11, 107, 21);
         }
 
         footer {
