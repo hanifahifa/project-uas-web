@@ -5,28 +5,100 @@ session_start();
 
 // Hanya admin dan panitia yang dapat mengakses
 if (!isset($_SESSION['user_nik']) || ($_SESSION['role'] != 'admin' && $_SESSION['role'] != 'panitia')) {
-    header('Location: ../login.php');
-    exit;
+  header('Location: ../login.php');
+  exit;
 }
 
-// Tentukan dashboard yang sesuai
+// Cek apakah pengguna sudah login dan hanya admin/panitia yang dapat mengakses
+if (!isset($_SESSION['user_nik']) || ($_SESSION['role'] != 'admin' && $_SESSION['role'] != 'panitia')) {
+  header('Location: ../login.php');
+  exit;
+}
+
+// Tentukan URL untuk kembali ke dashboard berdasarkan peran pengguna
 $dashboard_url = ($_SESSION['role'] == 'admin') ? '../admin/dashboard_admin.php' : '../panitia/dashboard_panitia.php';
 
-// Ambil data keuangan
-$stmt_masuk = $pdo->prepare("SELECT * FROM keuangan_masuk ORDER BY tanggal DESC");
-$stmt_masuk->execute();
-$data_masuk = $stmt_masuk->fetchAll();
 
-$stmt_keluar = $pdo->prepare("SELECT * FROM keuangan_keluar ORDER BY tanggal DESC");
-$stmt_keluar->execute();
-$data_keluar = $stmt_keluar->fetchAll();
+// Ambil data pemasukan dari tabel hewan_qurban dengan join ke users
+$stmt_pemasukan = $pdo->prepare("
+    SELECT 
+        hq.created_at AS tanggal, 
+        CONCAT(UPPER(SUBSTRING(hq.jenis, 1, 1)), LOWER(SUBSTRING(hq.jenis, 2))) AS jenis_hewan, 
+        hq.jumlah, 
+        hq.harga_per_ekor, 
+        hq.biaya_admin_per_ekor, 
+        (hq.harga_per_ekor * hq.jumlah) AS total_harga,
+        'Pemasukan' AS jenis_transaksi, 
+        hq.keterangan,
+        CONCAT(u.nik, ' - ', u.name) AS sumber
+    FROM hewan_qurban hq
+    LEFT JOIN users u ON hq.sumber = u.nik
+    ORDER BY hq.created_at DESC
+");
+
+// Pastikan query pemasukan berhasil sebelum eksekusi
+if ($stmt_pemasukan) {
+  $stmt_pemasukan->execute();
+  $pemasukan_data = $stmt_pemasukan->fetchAll();
+} else {
+  echo "Query Pemasukan Error!";
+  $pemasukan_data = [];
+}
+
+// Ambil data pengeluaran dari tabel keuangan_keluar
+$stmt_pengeluaran = $pdo->prepare("
+    SELECT 
+        kk.tanggal, 
+        kk.keperluan AS jenis_hewan, 
+        kk.jumlah, 
+        kk.harga AS harga_per_ekor,
+        NULL AS biaya_admin_per_ekor,
+        kk.harga AS total_harga,
+        'Pengeluaran' AS jenis_transaksi, 
+        kk.keterangan,
+        '-' AS sumber
+    FROM keuangan_keluar kk
+    ORDER BY kk.tanggal DESC
+");
+
+// Pastikan query pengeluaran berhasil sebelum eksekusi
+if ($stmt_pengeluaran) {
+  $stmt_pengeluaran->execute();
+  $pengeluaran_data = $stmt_pengeluaran->fetchAll();
+} else {
+  echo "Query Pengeluaran Error!";
+  $pengeluaran_data = [];
+}
+
+// Gabungkan hasil dari kedua query dan urutkan berdasarkan tanggal
+$data_keuangan = array_merge($pemasukan_data, $pengeluaran_data);
+
+// Urutkan berdasarkan tanggal (terbaru dulu)
+usort($data_keuangan, function ($a, $b) {
+  return strtotime($b['tanggal']) - strtotime($a['tanggal']);
+});
+
+// Hitung total pemasukan dan pengeluaran
+$total_pemasukan = 0;
+$total_pengeluaran = 0;
+
+foreach ($data_keuangan as $row) {
+  if ($row['jenis_transaksi'] == 'Pemasukan') {
+    $total_pemasukan += $row['total_harga'];
+  } else {
+    $total_pengeluaran += $row['total_harga'];
+  }
+}
+
+$saldo = $total_pemasukan - $total_pengeluaran;
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Laporan Keuangan - Sistem Qurban</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
@@ -85,17 +157,6 @@ $data_keluar = $stmt_keluar->fetchAll();
       border: none;
     }
 
-    .card {
-      border: none;
-      margin-top: 30px;
-      border-radius: 16px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.05);
-    }
-
-    .card-header {
-      border-radius: 16px 16px 0 0;
-    }
-
     table th {
       background-color: #0b5f3c;
       color: white;
@@ -109,18 +170,13 @@ $data_keluar = $stmt_keluar->fetchAll();
     .table {
       margin-bottom: 0;
     }
-
-    @media (max-width: 768px) {
-      .btn {
-        width: 100%;
-        margin-bottom: 10px;
-      }
-    }
   </style>
 </head>
+
 <body>
 
   <div class="container">
+
     <!-- Tombol Kembali -->
     <a href="<?= $dashboard_url ?>" class="btn btn-secondary mb-4">&larr; Kembali ke Dashboard</a>
 
@@ -128,16 +184,44 @@ $data_keluar = $stmt_keluar->fetchAll();
     <h1>Laporan Keuangan</h1>
     <p>Data pemasukan dan pengeluaran dari iuran qurban.</p>
 
+    <!-- Ringkasan Keuangan -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="card bg-success text-white">
+          <div class="card-body text-center">
+            <h5>Total Pemasukan</h5>
+            <h4>Rp <?= number_format($total_pemasukan, 0, ',', '.') ?></h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-danger text-white">
+          <div class="card-body text-center">
+            <h5>Total Pengeluaran</h5>
+            <h4>Rp <?= number_format($total_pengeluaran, 0, ',', '.') ?></h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card <?= $saldo >= 0 ? 'bg-info' : 'bg-warning' ?> text-white">
+          <div class="card-body text-center">
+            <h5>Saldo</h5>
+            <h4>Rp <?= number_format($saldo, 0, ',', '.') ?></h4>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Tombol Input -->
     <div class="d-flex flex-wrap justify-content-center gap-3 mb-4">
       <a href="financial_input.php?jenis=masuk" class="btn btn-success">+ Input Keuangan Masuk</a>
       <a href="financial_input.php?jenis=keluar" class="btn btn-danger">+ Input Keuangan Keluar</a>
     </div>
 
-    <!-- Laporan Masuk -->
+    <!-- Laporan Keuangan -->
     <div class="card">
       <div class="card-header bg-success text-white">
-        <h4 class="mb-0">Laporan Keuangan Masuk</h4>
+        <h4 class="mb-0">Laporan Keuangan</h4>
       </div>
       <div class="card-body p-0">
         <div class="table-responsive">
@@ -145,23 +229,52 @@ $data_keluar = $stmt_keluar->fetchAll();
             <thead>
               <tr>
                 <th>Tanggal</th>
+                <th>Jenis</th>
+                <th>Hewan/Keperluan</th>
                 <th>Sumber</th>
                 <th>Jumlah</th>
+                <th>Harga </th>
+                <th>Total</th>
+                <th>Biaya Admin</th>
                 <th>Keterangan</th>
               </tr>
             </thead>
             <tbody>
-              <?php foreach ($data_masuk as $row): ?>
-                <tr>
-                  <td><?= htmlspecialchars($row['tanggal']) ?></td>
+              <?php foreach ($data_keuangan as $row): ?>
+                <tr class="<?= $row['jenis_transaksi'] == 'Pemasukan' ? 'table-success' : 'table-danger' ?>">
+                  <td><?= date('d/m/Y H:i', strtotime($row['tanggal'])) ?></td>
+                  <td>
+                    <span class="badge <?= $row['jenis_transaksi'] == 'Pemasukan' ? 'bg-success' : 'bg-danger' ?>">
+                      <?= $row['jenis_transaksi'] ?>
+                    </span>
+                  </td>
+                  <td><?= htmlspecialchars($row['jenis_hewan']) ?></td>
                   <td><?= htmlspecialchars($row['sumber']) ?></td>
-                  <td>Rp <?= number_format($row['jumlah'], 0, ',', '.') ?></td>
-                  <td><?= htmlspecialchars($row['keterangan']) ?></td>
+                  <td class="text-center"><?= number_format($row['jumlah'], 0, ',', '.') ?></td>
+                  <td class="text-end">
+                    <?php if ($row['harga_per_ekor']): ?>
+                      Rp <?= number_format($row['harga_per_ekor'], 0, ',', '.') ?>
+                    <?php else: ?>
+                      -
+                    <?php endif; ?>
+                  </td>
+                  <td class="text-end">
+                    <strong>Rp <?= number_format($row['total_harga'], 0, ',', '.') ?></strong>
+                  </td>
+                  <td class="text-end">
+                    <?php if ($row['biaya_admin_per_ekor']): ?>
+                      Rp <?= number_format($row['biaya_admin_per_ekor'], 0, ',', '.') ?>
+                    <?php else: ?>
+                      -
+                    <?php endif; ?>
+                  </td>
+                  <td><?= htmlspecialchars($row['keterangan'] ?? '-') ?></td>
                 </tr>
               <?php endforeach; ?>
-              <?php if (empty($data_masuk)): ?>
+
+              <?php if (empty($data_keuangan)): ?>
                 <tr>
-                  <td colspan="4" class="text-center text-muted">Belum ada data keuangan masuk.</td>
+                  <td colspan="9" class="text-center text-muted">Belum ada data keuangan.</td>
                 </tr>
               <?php endif; ?>
             </tbody>
@@ -169,44 +282,8 @@ $data_keluar = $stmt_keluar->fetchAll();
         </div>
       </div>
     </div>
-
-    <!-- Laporan Keluar -->
-    <div class="card">
-      <div class="card-header bg-danger text-white">
-        <h4 class="mb-0">Laporan Keuangan Keluar</h4>
-      </div>
-      <div class="card-body p-0">
-        <div class="table-responsive">
-          <table class="table table-bordered table-hover mb-0">
-            <thead>
-              <tr>
-                <th>Tanggal</th>
-                <th>Keperluan</th>
-                <th>Jumlah</th>
-                <th>Keterangan</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php foreach ($data_keluar as $row): ?>
-                <tr>
-                  <td><?= htmlspecialchars($row['tanggal']) ?></td>
-                  <td><?= htmlspecialchars($row['keperluan']) ?></td>
-                  <td>Rp <?= number_format($row['jumlah'], 0, ',', '.') ?></td>
-                  <td><?= htmlspecialchars($row['keterangan']) ?></td>
-                </tr>
-              <?php endforeach; ?>
-              <?php if (empty($data_keluar)): ?>
-                <tr>
-                  <td colspan="4" class="text-center text-muted">Belum ada data keuangan keluar.</td>
-                </tr>
-              <?php endif; ?>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
   </div>
 
 </body>
+
 </html>

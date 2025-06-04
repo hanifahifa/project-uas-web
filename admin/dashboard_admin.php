@@ -4,7 +4,7 @@ include '../db.php';
 
 // Pastikan pengguna sudah login dan memiliki peran 'admin'
 if (!isset($_SESSION['user_nik']) || $_SESSION['role'] !== 'admin') {
-    header('Location: login.php');
+    header('Location: ../login.php');
     exit();
 }
 
@@ -13,8 +13,8 @@ $total_warga_sql = "SELECT COUNT(*) AS total_warga FROM users";
 $total_warga_result = $pdo->query($total_warga_sql);
 $total_warga = $total_warga_result->fetch()['total_warga'];
 
-// Ambil total iuran yang terkumpul dari tabel keuangan_masuk
-$total_iuran_sql = "SELECT SUM(jumlah) AS total_iuran FROM keuangan_masuk";  // Sesuaikan dengan tabel yang sesuai
+// Ambil total iuran yang terkumpul dari tabel hewan_qurban (sesuai dengan financial_report.php)
+$total_iuran_sql = "SELECT SUM(harga_per_ekor * jumlah) AS total_iuran FROM hewan_qurban";
 $total_iuran_result = $pdo->query($total_iuran_sql);
 $total_iuran = $total_iuran_result->fetch()['total_iuran'];
 
@@ -99,7 +99,6 @@ if ($total_daging > 0) {
 
         h2 {
             color: rgb(12, 71, 41);
-            ;
             font-size: 32px;
             font-weight: 600;
             text-align: center;
@@ -109,7 +108,6 @@ if ($total_daging > 0) {
         .back-btn {
             font-size: 16px;
             color: rgb(12, 71, 41);
-            ;
             text-decoration: none;
             display: inline-block;
             margin-bottom: 20px;
@@ -118,7 +116,6 @@ if ($total_daging > 0) {
 
         .back-btn:hover {
             color: rgb(12, 71, 41);
-            ;
         }
 
         .dashboard-stats {
@@ -144,7 +141,6 @@ if ($total_daging > 0) {
         .card h4 {
             font-size: 20px;
             color: rgb(12, 71, 41);
-            ;
         }
 
         .card p {
@@ -166,7 +162,6 @@ if ($total_daging > 0) {
 
         .card-title {
             color: rgb(12, 71, 41);
-            ;
             font-size: 18px;
             font-weight: bold;
         }
@@ -180,7 +175,6 @@ if ($total_daging > 0) {
             display: inline-block;
             padding: 12px 30px;
             background-color: rgb(12, 71, 41);
-            ;
             color: white;
             border-radius: 12px;
             cursor: pointer;
@@ -191,8 +185,9 @@ if ($total_daging > 0) {
         }
 
         .btn:hover {
-            background-color: rgb(12, 71, 41);
-            ;
+            background-color: rgb(8, 50, 29);
+            color: white;
+            text-decoration: none;
         }
 
         footer {
@@ -261,8 +256,8 @@ if ($total_daging > 0) {
                 <p>Rp <?php echo number_format($total_iuran, 0, ',', '.'); ?></p>
             </div>
             <div class="card">
-                <h4>Total Hewan Qurban</h4>
-                <p><?php echo $total_hewan; ?> Hewan</p>
+                <h4>Total Warga yang ber-Qurban</h4>
+                <p><?php echo $total_hewan; ?> Orang</p>
             </div>
 
             <div class="card">
