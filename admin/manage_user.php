@@ -10,6 +10,7 @@ if (!isset($_SESSION['user_nik']) || $_SESSION['role'] != 'admin') {
 
 // Ambil semua data pengguna
 $query = "SELECT * FROM users ORDER BY name";
+
 $stmt = $pdo->prepare($query);
 $stmt->execute();
 
@@ -18,7 +19,7 @@ $success_message = '';
 $error_message = '';
 
 if (isset($_GET['success'])) {
-    switch($_GET['success']) {
+    switch ($_GET['success']) {
         case 'user_berhasil_dihapus':
             $success_message = 'Pengguna berhasil dihapus dari sistem!';
             break;
@@ -26,7 +27,7 @@ if (isset($_GET['success'])) {
 }
 
 if (isset($_GET['error'])) {
-    switch($_GET['error']) {
+    switch ($_GET['error']) {
         case 'nik_kosong':
             $error_message = 'NIK pengguna tidak valid!';
             break;
@@ -45,6 +46,7 @@ if (isset($_GET['error'])) {
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -106,7 +108,8 @@ if (isset($_GET['error'])) {
             margin-bottom: 30px;
         }
 
-        th, td {
+        th,
+        td {
             padding: 12px 15px;
             text-align: center;
             border-bottom: 1px solid #ddd;
@@ -199,7 +202,7 @@ if (isset($_GET['error'])) {
             table {
                 font-size: 14px;
             }
-            
+
             .action-link {
                 display: block;
                 margin: 2px 0;
@@ -207,6 +210,7 @@ if (isset($_GET['error'])) {
         }
     </style>
 </head>
+
 <body>
 
     <div class="container">
@@ -234,7 +238,7 @@ if (isset($_GET['error'])) {
             <div class="user-count">
                 Total: <?= $stmt->rowCount() ?> pengguna terdaftar
             </div>
-            
+
             <table>
                 <thead>
                     <tr>
@@ -251,20 +255,43 @@ if (isset($_GET['error'])) {
                             <td><?= htmlspecialchars($row['nik']) ?></td>
                             <td><?= htmlspecialchars($row['name']) ?></td>
                             <td><?= $row['jenis_kelamin'] === 'L' ? 'Laki-laki' : 'Perempuan' ?></td>
-                            <td>
+                            <!-- <td>
                                 <span style="padding: 4px 8px; background-color: 
-                                    <?php 
-                                        switch($row['role']) {
-                                            case 'admin': echo '#dc2626'; break;
-                                            case 'panitia': echo '#2563eb'; break;
-                                            case 'berqurban': echo '#16a34a'; break;
-                                            default: echo '#6b7280';
-                                        }
+                                    <?php
+                                    switch ($row['role']) {
+                                        case 'admin':
+                                            echo '#dc2626';
+                                            break;
+                                        case 'panitia':
+                                            echo '#2563eb';
+                                            break;
+                                        case 'berqurban':
+                                            echo '#16a34a';
+                                            break;
+                                        default:
+                                            echo '#6b7280';
+                                    }
                                     ?>; 
                                     color: white; border-radius: 12px; font-size: 12px;">
                                     <?= ucfirst($row['role']) ?>
                                 </span>
-                            </td>
+                            </td> -->
+<td>
+    <span style="padding: 4px 8px; background-color: 
+        <?php 
+            switch($row['role']) {
+                case 'admin': echo '#dc2626'; break;
+                case 'panitia': echo '#2563eb'; break;
+                case 'berqurban': echo '#16a34a'; break;
+                case 'warga': echo '#6366f1'; break;
+                default: echo '#6b7280';
+            }
+        ?>; 
+        color: white; border-radius: 12px; font-size: 12px;">
+        <?= ucfirst($row['role']) ?>
+    </span>
+</td>
+
                             <td>
                                 <a href="edit_user.php?nik=<?= $row['nik'] ?>" class="action-link">
                                     ✏️ Edit
@@ -296,4 +323,5 @@ if (isset($_GET['error'])) {
     </div>
 
 </body>
+
 </html>
