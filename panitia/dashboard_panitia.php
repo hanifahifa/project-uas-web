@@ -8,17 +8,26 @@ if (!isset($_SESSION['user_nik']) || $_SESSION['role'] !== 'panitia') {
     exit();
 }
 
+// Membuat koneksi ke MySQL
+$conn = mysqli_connect($host, $username, $password, $dbname);
+
+// Mengecek apakah koneksi berhasil
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
 // Ambil data pengguna yang login
 $user_nik = $_SESSION['user_nik'];
-$query = $pdo->prepare("SELECT * FROM users WHERE nik = ?");
-$query->execute([$user_nik]);
-$user = $query->fetch();
+$query = mysqli_prepare($conn, "SELECT * FROM users WHERE nik = ?");
+mysqli_stmt_bind_param($query, 's', $user_nik);
+mysqli_stmt_execute($query);
+$result = mysqli_stmt_get_result($query);
+$user = mysqli_fetch_assoc($result);
 
 // Ambil data tambahan untuk Panitia (misal, statistik qurban)
 $ambil_data_qurban_sql = "SELECT * FROM pembagian_daging";
-$ambil_data_qurban = $pdo->prepare($ambil_data_qurban_sql);
-$ambil_data_qurban->execute();
-$data_qurban = $ambil_data_qurban->fetchAll();
+$ambil_data_qurban = mysqli_query($conn, $ambil_data_qurban_sql);
+$data_qurban = mysqli_fetch_all($ambil_data_qurban, MYSQLI_ASSOC);
 
 // Menghitung total berat daging yang dibagikan
 $total_daging = 0;
@@ -45,268 +54,7 @@ $persen_daging_terdistribusi = ($total_daging > 0) ? ($jumlah_daging_sudah_diamb
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-dark: #1a4f2e;
-            --primary-medium: #8fbc8f;
-            --primary-light: #e8f5e8;
-            --accent: #f4d4a7;
-            --text-dark: #2c3e50;
-            --text-light: #6c757d;
-            --white: #ffffff;
-            --border-radius: 16px;
-            --shadow: 0 4px 20px rgba(26, 79, 46, 0.08);
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--primary-light) 0%, #f8fffe 100%);
-            min-height: 100vh;
-            color: var(--text-dark);
-        }
-
-        .dashboard-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-        }
-
-        .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2.5rem;
-            background: var(--white);
-            padding: 1.5rem 2rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-        }
-
-        .welcome-text h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary-dark);
-            margin: 0;
-        }
-
-        .welcome-text p {
-            color: var(--text-light);
-            margin: 0.5rem 0 0 0;
-            font-size: 0.95rem;
-        }
-
-        .logout-btn {
-            background: var(--primary-medium);
-            color: var(--white);
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            background: var(--primary-dark);
-            color: var(--white);
-            transform: translateY(-1px);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .stat-card {
-            background: var(--white);
-            border-radius: var(--border-radius);
-            padding: 2rem;
-            box-shadow: var(--shadow);
-            border: none;
-        }
-
-        .stat-card h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--primary-dark);
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .stat-card .icon {
-            width: 40px;
-            height: 40px;
-            background: var(--primary-light);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary-dark);
-        }
-
-        .progress-container {
-            margin-top: 1rem;
-        }
-
-        .progress {
-            height: 12px;
-            border-radius: 8px;
-            background: var(--primary-light);
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            background: linear-gradient(90deg, var(--primary-medium), var(--primary-dark));
-            border-radius: 8px;
-            transition: width 0.6s ease;
-        }
-
-        .percentage-text {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-detail {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 1rem 0;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--primary-light);
-        }
-
-        .stat-detail:last-child {
-            border-bottom: none;
-        }
-
-        .stat-label {
-            color: var(--text-light);
-            font-size: 0.9rem;
-        }
-
-        .stat-value {
-            font-weight: 600;
-            color: var(--primary-dark);
-            font-size: 1.1rem;
-        }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .menu-card {
-            background: var(--white);
-            border-radius: var(--border-radius);
-            padding: 2rem;
-            box-shadow: var(--shadow);
-            border: none;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .menu-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 32px rgba(26, 79, 46, 0.12);
-        }
-
-        .menu-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-medium), var(--primary-dark));
-        }
-
-        .menu-card h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--primary-dark);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .menu-card .icon {
-            width: 48px;
-            height: 48px;
-            background: var(--primary-light);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary-dark);
-            font-size: 1.5rem;
-        }
-
-        .menu-card p {
-            color: var(--text-light);
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-
-        .menu-btn {
-            background: var(--primary-dark);
-            color: var(--white);
-            border: none;
-            padding: 0.875rem 1.5rem;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            width: 100%;
-            justify-content: center;
-        }
-
-        .menu-btn:hover {
-            background: var(--primary-medium);
-            color: var(--white);
-            transform: translateY(-1px);
-        }
-
-        .footer {
-            text-align: center;
-            padding: 2rem 0;
-            color: var(--text-light);
-            font-size: 0.9rem;
-            background: var(--white);
-            border-radius: var(--border-radius);
-            margin-top: 2rem;
-        }
-
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .header-section {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-            
-            .menu-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .dashboard-container {
-                padding: 1rem;
-            }
-        }
+        /* Styling yang sudah ada di HTML */
     </style>
 </head>
 

@@ -7,9 +7,10 @@ if (isset($_POST['submit'])) {
     $NIK = $_POST['NIK'];
     $alamat = $_POST['alamat'];
     $jenis_kelamin = $_POST['jenis_kelamin'];
-    $password = $_POST['password'];
+    $password = $_POST['password']; // Mendapatkan password dari form
     $role = $_POST['role'];
 
+    // Mengecek apakah NIK sudah terdaftar
     $query_check_nik = "SELECT * FROM users WHERE nik = ?";
     $stmt_check_nik = $pdo->prepare($query_check_nik);
     $stmt_check_nik->execute([$NIK]);
@@ -22,19 +23,25 @@ if (isset($_POST['submit'])) {
         exit();
     }
 
+    // Menggunakan password_hash untuk mengenkripsi password sebelum disimpan ke database
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT); // Hash password dengan bcrypt
+
+    // Menyimpan data pengguna ke dalam database
     $query = $pdo->prepare("
         INSERT INTO users (nik, name, alamat, jenis_kelamin, password, role)
         VALUES (?, ?, ?, ?, ?, ?)
     ");
-    $query->execute([$NIK, $nama, $alamat, $jenis_kelamin, $password, $role]);
+    $query->execute([$NIK, $nama, $alamat, $jenis_kelamin, $hashed_password, $role]);
 
     $_SESSION['last_nik'] = $NIK;
 
+    // Membuat QR code
     $qr_data = "NIK: " . $NIK . " | Nama: " . $nama;
     $qr_file = '../qrcodes/' . $NIK . '.png';
     $qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($qr_data);
     file_put_contents($qr_file, file_get_contents($qr_url));
 
+    // Redirect ke halaman manage_user.php
     header("Location: manage_user.php");
     exit();
 }

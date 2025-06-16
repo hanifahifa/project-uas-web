@@ -1,13 +1,12 @@
 <?php
-$host = 'localhost'; // alamat server
-$dbname = 'qurbana_app';  // nama database
-$username = 'root';  // username mysql
-$password = '';      // password mysql
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    echo 'Connection failed: ' . $e->getMessage();
+$host = 'localhost'; 
+$dbname = 'qurbana_app'; 
+$username = 'root'; 
+$password = '';      
+$koneksi = mysqli_connect($host, $username, $password, $dbname);
+if (!$koneksi) {
+    die("Connection failed: " . mysqli_connect_error());
 }
+
+// echo "Connected successfully";
 ?>
