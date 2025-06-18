@@ -23,9 +23,10 @@ $result = mysqli_query($conn, $query);
 $user = mysqli_fetch_assoc($result);
 
 // Ambil data total warga
-$total_warga_sql = "SELECT COUNT(*) AS total_warga FROM users";
+$total_warga_sql = "SELECT COUNT(*) AS total_warga FROM users WHERE role = 'warga'";
 $total_warga_result = mysqli_query($conn, $total_warga_sql);
 $total_warga = mysqli_fetch_assoc($total_warga_result)['total_warga'];
+
 
 // Ambil total iuran yang terkumpul dari tabel hewan_qurban
 $total_iuran_sql = "SELECT SUM(harga_per_ekor * jumlah) AS total_iuran FROM hewan_qurban";
@@ -37,10 +38,10 @@ if ($total_iuran === null) {
     $total_iuran = 0;
 }
 
-// Ambil total hewan qurban
-$total_hewan_sql = "SELECT COUNT(*) AS total_hewan FROM hewan_qurban";
-$total_hewan_result = mysqli_query($conn, $total_hewan_sql);
-$total_hewan = mysqli_fetch_assoc($total_hewan_result)['total_hewan'];
+// Ambil total peserta qurban
+$total_berqurban_sql = "SELECT COUNT(*) AS total_berqurban FROM user_roles WHERE role = 'berqurban'";
+$total_berqurban_result = mysqli_query($conn, $total_berqurban_sql);
+$total_berqurban = mysqli_fetch_assoc($total_berqurban_result)['total_berqurban'];
 
 // Ambil status pembagian daging (misalnya persentase)
 $ambil_daging_sql = "SELECT COUNT(*) AS total_ambil_daging FROM pembagian_daging WHERE status_pengambilan = 'sudah'";
@@ -536,7 +537,7 @@ if ($total_daging > 0) {
                         <i class="fas fa-hand-holding-heart"></i>
                     </div>
                 </div>
-                <div class="stat-value"><?php echo number_format($total_hewan); ?></div>
+                <div class="stat-value"><?php echo number_format($total_berqurban); ?></div>
                 <div class="stat-label">Warga Peserta Qurban</div>
             </div>
 

@@ -46,15 +46,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         try {
             // Enkripsi password
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            $password_to_store = $password;
 
             // Update data pengguna di tabel users
-            $query_update = "UPDATE users SET name = '$name', jenis_kelamin = '$jenis_kelamin', alamat = '$alamat', password = '$hashed_password' WHERE nik = '$nik'";
+            $query_update = "UPDATE users SET name = '$name', jenis_kelamin = '$jenis_kelamin', alamat = '$alamat', password = '$password_to_store' WHERE nik = '$nik'";
             mysqli_query($conn, $query_update);
 
             // Gabungkan role lama dengan role baru (tanpa menghapus role lama)
             $merged_roles = array_unique(array_merge(array_column($existing_roles, 'role'), $roles)); // Gabungkan dan hilangkan duplikasi
-            $merged_roles_string = implode(',', $merged_roles); // Menggabungkan role menjadi string yang dipisahkan koma
 
             // Hapus semua role lama dari user
             $query_delete_roles = "DELETE FROM user_roles WHERE nik = '$nik'";
@@ -77,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -84,87 +84,137 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
         body {
-            background-color: #f0f8f0;
-            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f8f0, #e0f0e0);
+            font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
             min-height: 100vh;
+            overflow: hidden;
         }
         .container {
             max-width: 500px;
             width: 100%;
         }
         .header {
-            background-color: #28a745;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
-            padding: 15px;
-            border-radius: 10px 10px 0 0;
+            padding: 25px;
+            border-radius: 15px 15px 0 0;
             text-align: center;
             margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         h1 {
-            font-size: 2em;
+            font-size: 2.2em;
             margin: 0;
+            font-weight: 600;
         }
         .form-container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 0 0 10px 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+            padding: 30px;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-align: left;
         }
         .form-group label {
             color: #28a745;
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-weight: 600;
+            margin-bottom: 8px;
             display: block;
         }
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #28a745;
-            border-radius: 5px;
+            padding: 10px;
+            border: 2px solid #28a745;
+            border-radius: 8px;
             box-sizing: border-box;
+            font-size: 1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-        .form-group select[multiple] {
-            height: 100px; /* Tinggi untuk multiple select */
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #1f7a38;
+            box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+            outline: none;
+        }
+        ..role-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .role-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+        }
+        .role-option:hover {
+            border-color: #28a745;
+        }
+        .role-option input[type="checkbox"] {
+            margin: 0 12px 0 0;
+            transform: scale(1.2);
+            accent-color: #28a745;
+        }
+        .role-option label {
+            margin: 0;
+            font-weight: 500;
+            color: #495057;
+            cursor: pointer;
+            flex: 1;
         }
         .btn-group {
-            margin-top: 20px;
+            margin-top: 30px;
             text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 20px; /* Jarak antar tombol */
         }
         .btn {
-            background-color: #28a745;
+            background: linear-gradient(90deg, #28a745, #1f7a38);
             color: white;
-            padding: 10px 20px;
+            padding: 12px 25px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             text-decoration: none;
-            font-weight: bold;
-            margin: 0 10px;
-            transition: background-color 0.3s;
+            font-weight: 600;
+            transition: transform 0.3s ease, background 0.3s ease;
         }
         .btn:hover {
-            background-color: #1f7a38;
+            background: linear-gradient(90deg, #1f7a38, #145a2a);
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(0);
         }
         .alert-error {
             background-color: #f8d7da;
             color: #721c24;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 12px;
+            border-radius: 8px;
             margin-bottom: 20px;
             text-align: center;
-            border: 1px solid #f5c6cb;
+            border-left: 4px solid #721c24;
+            animation: fadeIn 0.5s ease-in-out;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -199,12 +249,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <div class="form-group">
                     <label for="role">Role</label>
-                    <select id="role" name="role[]" multiple required>
-                        <option value="admin" <?= in_array('admin', array_column($existing_roles, 'role')) ? 'selected' : '' ?>>Admin</option>
-                        <option value="warga" <?= in_array('warga', array_column($existing_roles, 'role')) ? 'selected' : '' ?>>Warga</option>
-                        <option value="panitia" <?= in_array('panitia', array_column($existing_roles, 'role')) ? 'selected' : '' ?>>Panitia</option>
-                        <option value="berqurban" <?= in_array('berqurban', array_column($existing_roles, 'role')) ? 'selected' : '' ?>>Berqurban</option>
-                    </select>
+                    <div class="role-options">
+                        <div class="role-option">
+                            <input type="checkbox" id="role_panitia" name="role[]" value="panitia" <?= in_array('panitia', array_column($existing_roles, 'role')) ? 'checked' : '' ?>>
+                            <label for="role_panitia">Panitia</label>
+                        </div>
+                        <div class="role-option">
+                            <input type="checkbox" id="role_berqurban" name="role[]" value="berqurban" <?= in_array('berqurban', array_column($existing_roles, 'role')) ? 'checked' : '' ?>>
+                            <label for="role_berqurban">Berqurban</label>
+                        </div>
+                    </div>
                 </div>
                 <div class="btn-group">
                     <button type="submit" class="btn">Simpan Perubahan</button>
@@ -214,4 +268,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
 </body>
+
 </html>

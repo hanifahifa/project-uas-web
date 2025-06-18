@@ -3,6 +3,7 @@ include('../db.php');
 session_start();
 
 if (isset($_POST['submit'])) {
+    // Mendapatkan data dari form
     $nama = $_POST['nama'];
     $NIK = $_POST['NIK'];
     $alamat = $_POST['alamat'];
@@ -22,25 +23,19 @@ if (isset($_POST['submit'])) {
         exit();
     }
 
-    $hashed_password = $password;  // Simpan password asli tanpa hashing
+    // Simpan password asli tanpa hashing (hati-hati dengan keamanan)
+    $password_to_store = $password;
 
     // Menyimpan data pengguna ke dalam database (users)
     $query = "
         INSERT INTO users (nik, name, alamat, jenis_kelamin, password, role)
-        VALUES ('$NIK', '$nama', '$alamat', '$jenis_kelamin', '$hashed_password', '$role')
+        VALUES ('$NIK', '$nama', '$alamat', '$jenis_kelamin', '$password_to_store', '$role')
     ";
+
     if (mysqli_query($conn, $query)) {
-        // Jika pengguna memilih "warga", simpan role lain ke dalam tabel user_roles
-        if ($role == 'warga') {
-            $query_role = "INSERT INTO user_roles (nik, role) VALUES ('$NIK', 'warga')";
-            mysqli_query($conn, $query_role);
-        } elseif ($role == 'admin') {
-            $query_role = "INSERT INTO user_roles (nik, role) VALUES ('$NIK', 'admin')";
-            mysqli_query($conn, $query_role);
-        } elseif ($role == 'panitia') {
-            $query_role = "INSERT INTO user_roles (nik, role) VALUES ('$NIK', 'panitia')";
-            mysqli_query($conn, $query_role);
-        }
+        // Menyimpan role yang sesuai ke tabel user_roles
+        $query_role = "INSERT INTO user_roles (nik, role) VALUES ('$NIK', '$role')";
+        mysqli_query($conn, $query_role);
 
         $_SESSION['last_nik'] = $NIK;
 
@@ -50,11 +45,12 @@ if (isset($_POST['submit'])) {
         $qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($qr_data);
         file_put_contents($qr_file, file_get_contents($qr_url));
 
-        // Redirect ke halaman manage_user.php
+        // Redirect ke halaman manage_user.php setelah berhasil
         mysqli_close($conn);
         header("Location: manage_user.php");
         exit();
     } else {
+        // Jika ada kesalahan dalam penyimpanan data
         mysqli_close($conn);
         echo "<script>
                 alert('Gagal menyimpan data pengguna.');
@@ -67,7 +63,6 @@ if (isset($_POST['submit'])) {
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -195,7 +190,6 @@ if (isset($_POST['submit'])) {
                     <select id="role" name="role" required>
                         <option value="warga">Warga</option>
                         <option value="admin">Admin</option>
-                        <option value="panitia">Panitia</option>
                     </select>
                 </div>
                 <input type="submit" name="submit" value="Register">

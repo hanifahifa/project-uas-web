@@ -208,13 +208,17 @@ $result = mysqli_query($conn, $query);
                             <td><?= $row['jenis_kelamin'] === 'L' ? 'Laki-laki' : 'Perempuan' ?></td>
                             <td>
                                 <?php
-                                $roles_query = "SELECT role FROM user_roles WHERE nik = '" . $row['nik'] . "'";
+                                // Mengambil role dengan GROUP_CONCAT agar hanya tampil satu role
+                                $nik = mysqli_real_escape_string($conn, $row['nik']);  // Escape input untuk menghindari SQL Injection
+                                $roles_query = "
+                                    SELECT GROUP_CONCAT(DISTINCT role ORDER BY role) AS role
+                                    FROM user_roles
+                                    WHERE nik = '$nik'
+                                    GROUP BY nik
+                                ";
                                 $roles_result = mysqli_query($conn, $roles_query);
-                                $roles = [];
-                                while ($role_row = mysqli_fetch_array($roles_result)) {
-                                    $roles[] = $role_row['role'];
-                                }
-                                echo implode(", ", $roles);
+                                $roles = mysqli_fetch_assoc($roles_result);
+                                echo htmlspecialchars($roles['role']);
                                 ?>
                             </td>
                             <td>
