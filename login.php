@@ -48,10 +48,88 @@ if (isset($_POST['submit'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Login - Sistem Qurban</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f0f8f0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .back-btn {
+            color: #28a745;
+            text-decoration: none;
+            font-size: 1em;
+            margin: 20px;
+            font-weight: bold;
+        }
+        .back-btn:hover {
+            color: #1f7a38;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        h1 {
+            color: #28a745;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #555;
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-label {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .form-control {
+            border: 1px solid #28a745;
+            border-radius: 5px;
+            padding: 8px;
+        }
+        .btn-elegant {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            width: 100%;
+            font-weight: bold;
+        }
+        .btn-elegant:hover {
+            background-color: #1f7a38;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            color: #555;
+            margin-top: auto;
+        }
+    </style>
 </head>
 
 <body>
-    <a href="index.html" class="back-btn">&larr; Kembali ke Beranda</a>
+    <a href="index.html" class="back-btn">← Kembali ke Beranda</a>
 
     <div class="login-container" role="main" aria-label="Form login sistem qurban">
         <h1>QURBANA</h1>
@@ -75,7 +153,7 @@ if (isset($_POST['submit'])) {
     </div>
 
     <footer>
-        &copy; 2025 QURBANA: Sistem Qurban RT 001.
+        © 2025 QURBANA: Sistem Qurban RT 001.
     </footer>
 </body>
 

@@ -85,8 +85,100 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Styling goes here */
-        /* Customize as needed */
+        body {
+            background-color: #f0f8f0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .header-section {
+            background-color: #28a745;
+            color: white;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header-title h1 {
+            font-size: 1.5em;
+            margin: 0;
+        }
+        .header-title p {
+            font-size: 0.9em;
+            margin: 5px 0 0;
+        }
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        .main-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .card-header h4 {
+            color: #28a745;
+            margin: 0;
+            font-size: 1.2em;
+        }
+        .info-card {
+            margin-bottom: 20px;
+        }
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .info-value {
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-label {
+            color: #28a745;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-control, .form-select {
+            border: 1px solid #28a745;
+            border-radius: 5px;
+            padding: 8px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-cancel, .btn-save {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+        }
+        .btn-cancel {
+            background-color: #dc3545;
+        }
+        .btn-save {
+            background-color: #28a745;
+        }
+        .alert {
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .btn-close {
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -109,7 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Alert Messages -->
     <?php if (isset($_SESSION['message'])): ?>
-        <div class="alert alert-<?= $_SESSION['message_type'] ?> alert-dismissible fade show" role="alert">
+        <div class="alert alert-<?= $_SESSION['message_type'] === 'success' ? 'success' : 'danger' ?> alert-dismissible fade show" role="alert">
             <i class="fas fa-<?= $_SESSION['message_type'] === 'success' ? 'check-circle' : 'exclamation-circle' ?>"></i>
             <?= $_SESSION['message'] ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>

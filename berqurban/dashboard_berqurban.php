@@ -67,6 +67,12 @@ $status_pengambilan = $data_daging ? ($data_daging['status_pengambilan'] == 'sud
                 <h1>Dashboard Berqurban</h1>
                 <p>Selamat datang, <?php echo htmlspecialchars($user['name'] ?? 'Nama Tidak Ditemukan'); ?></p>
             </div>
+
+             <!-- Kembali Button -->            
+            <a href="../Dashboard_Utama/dashboard.php" class="kembali-btn">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+
             <a href="../logout.php" class="logout-btn">
                 <i class="fas fa-sign-out-alt"></i> Logout
             </a>

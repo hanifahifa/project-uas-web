@@ -3,10 +3,10 @@ session_start();
 include '../db.php';
 
 // Pastikan pengguna sudah login dan memiliki peran 'panitia'
-if (!isset($_SESSION['user_nik']) || $_SESSION['role'] !== 'panitia') {
-    header('Location: ../login.php');
-    exit();
-}
+// if (!isset($_SESSION['user_nik']) || $_SESSION['role'] !== 'panitia') {
+//     header('Location: ../login.php');
+//     exit();
+// }
 
 // Handle konfirmasi pengambilan
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_pickup'])) {

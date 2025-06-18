@@ -3,12 +3,6 @@ session_start();  // Make sure session_start() is called at the top
 
 include '../db.php';  // Connecting to the database
 
-// // Ensure that the user is logged in and has the 'panitia' role
-// if (!isset($_SESSION['nik']) || $_SESSION['role'] !== 'panitia') {
-//     header('Location: ../login.php');  // Redirect to login if not logged in or role is not 'panitia'
-//     exit();
-// }
-
 // Connect to MySQL
 $conn = mysqli_connect($host, $username, $password, $dbname);
 
@@ -68,6 +62,13 @@ $persen_daging_terdistribusi = ($total_daging > 0) ? ($jumlah_daging_sudah_diamb
                 <h1>Dashboard Panitia</h1>
                 <p>Selamat datang, <?php echo htmlspecialchars($user['name'] ?? $user['nama'] ?? 'Panitia'); ?></p>
             </div>
+
+            <!-- Kembali Button -->            
+            <a href="../Dashboard_Utama/dashboard.php" class="kembali-btn">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+
+            <!-- Logout Button -->
             <a href="../logout.php" class="logout-btn">
                 <i class="fas fa-sign-out-alt"></i> Logout
             </a>

@@ -75,6 +75,11 @@ if ($user) {
                 <h1>Dashboard Warga</h1>
                 <p>Selamat datang, <?php echo htmlspecialchars($user['name']); ?></p>
             </div>
+             <!-- Kembali Button -->            
+            <a href="../Dashboard_Utama/dashboard.php" class="kembali-btn">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+
             <a href="../logout.php" class="logout-btn">
                 <i class="fas fa-sign-out-alt"></i> Logout
             </a>
