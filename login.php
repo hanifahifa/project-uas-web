@@ -1,6 +1,6 @@
 <?php
-session_start();  // Memulai sesi
-include 'db.php';  // Pastikan file db.php sudah ada dan benar
+session_start(); // Memulai sesi
+include 'db.php'; // Pastikan file db.php sudah ada dan benar
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -11,17 +11,18 @@ if (isset($_POST['submit'])) {
 
     try {
         // Query untuk mendapatkan data pengguna berdasarkan NIK
-        $sql = "SELECT * FROM users WHERE nik = '$nik'";  // Tanpa prepared statement, langsung query
-        $result = mysqli_query($conn, $sql);  // Menggunakan $conn untuk koneksi database
+        $sql = "SELECT * FROM users WHERE nik = '$nik'"; // Tanpa prepared statement, langsung query
+        $result = mysqli_query($conn, $sql); // Menggunakan $conn untuk koneksi database
         $user = mysqli_fetch_assoc($result);
 
         // Cek apakah pengguna ditemukan
         if ($user) {
             // Verifikasi password dengan password yang terenkripsi di database
-            if (password_verify($password, $user['password'])) {
+            if ($password === $user['password']) {
+                // Password benar, lakukan login
                 // Set session data
-                $_SESSION['nik'] = $user['nik'];  // Menyimpan nik di sesi
-                $_SESSION['role'] = $user['role'];  // Menyimpan role di sesi
+                $_SESSION['nik'] = $user['nik']; // Menyimpan nik di sesi
+                $_SESSION['role'] = $user['role']; // Menyimpan role di sesi
 
                 // Redirect ke dashboard utama
                 header('Location: Dashboard_Utama/dashboard.php');
@@ -43,6 +44,7 @@ if (isset($_POST['submit'])) {
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -50,45 +52,60 @@ if (isset($_POST['submit'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
         body {
-            background-color: #f0f8f0;
-            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f8f0, #e0f0e0);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            margin: 0;
+            overflow: hidden;
         }
         .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
             color: #28a745;
             text-decoration: none;
-            font-size: 1em;
-            margin: 20px;
+            font-size: 1.1em;
             font-weight: bold;
+            transition: color 0.3s ease, transform 0.3s ease;
         }
         .back-btn:hover {
             color: #1f7a38;
+            transform: translateX(-5px);
         }
         .login-container {
+            background: white;
             max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
             text-align: center;
+            margin: auto;
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         h1 {
             color: #28a745;
-            font-size: 2em;
-            margin-bottom: 10px;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
         }
         .subtitle {
-            color: #555;
-            font-size: 1em;
-            margin-bottom: 20px;
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            font-style: italic;
         }
         .error-message {
             background-color: #f8d7da;
@@ -97,33 +114,61 @@ if (isset($_POST['submit'])) {
             border-radius: 5px;
             margin-bottom: 20px;
             text-align: left;
+            border-left: 4px solid #721c24;
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
         }
         .form-label {
             color: #28a745;
-            font-weight: bold;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: block;
+            text-align: left;
         }
         .form-control {
-            border: 1px solid #28a745;
-            border-radius: 5px;
-            padding: 8px;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #1f7a38;
+            box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+            outline: none;
         }
         .btn-elegant {
-            background-color: #28a745;
+            background: linear-gradient(90deg, #28a745, #1f7a38);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 25px;
+            border-radius: 8px;
             width: 100%;
-            font-weight: bold;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: transform 0.3s ease, background 0.3s ease;
         }
         .btn-elegant:hover {
-            background-color: #1f7a38;
+            background: linear-gradient(90deg, #1f7a38, #145a2a);
+            transform: translateY(-2px);
+        }
+        .btn-elegant:active {
+            transform: translateY(0);
         }
         footer {
             text-align: center;
             padding: 10px;
-            color: #555;
+            color: #666;
             margin-top: auto;
+            font-size: 0.9em;
+            width: 100%;
         }
     </style>
 </head>
@@ -136,7 +181,7 @@ if (isset($_POST['submit'])) {
         <p class="subtitle">Masuk untuk mengelola sistem Qurban dengan mudah dan aman</p>
 
         <?php if (isset($error)): ?>
-        <div class="error-message" role="alert" aria-live="assertive"><?= htmlspecialchars($error) ?></div>
+            <div class="error-message" role="alert" aria-live="assertive"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
         <form method="POST" novalidate>
@@ -146,9 +191,11 @@ if (isset($_POST['submit'])) {
             </div>
             <div class="mb-4 text-start">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" id="password" name="password" class="form-control" required autocomplete="current-password" />
+                <input type="password" id="password" name="password" class="form-control" required
+                    autocomplete="current-password" />
             </div>
-            <button type="submit" name="submit" class="btn btn-elegant" aria-label="Login ke sistem Qurbana">Masuk</button>
+            <button type="submit" name="submit" class="btn btn-elegant"
+                aria-label="Login ke sistem Qurbana">Masuk</button>
         </form>
     </div>
 

@@ -22,8 +22,7 @@ if (isset($_POST['submit'])) {
         exit();
     }
 
-    // Menggunakan password_hash untuk mengenkripsi password sebelum disimpan ke database
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT); // Hash password dengan bcrypt
+    $hashed_password = $password;  // Simpan password asli tanpa hashing
 
     // Menyimpan data pengguna ke dalam database (users)
     $query = "
