@@ -3,10 +3,13 @@ session_start();
 include '../db.php';
 
 // Pastikan pengguna sudah login dan memiliki peran 'warga'
-if (!isset($_SESSION['user_nik']) || $_SESSION['role'] !== 'warga') {
+if (!isset($_SESSION['nik']) || $_SESSION['role'] !== 'warga') {
     header('Location: ../login.php');
     exit();
 }
+
+// Ambil nik dari session
+$nik = $_SESSION['nik'];
 
 // Membuat koneksi ke MySQL
 $conn = mysqli_connect($host, $username, $password, $dbname);
@@ -17,28 +20,35 @@ if (!$conn) {
 }
 
 // Ambil data dari database sesuai hak akses Warga
-$user_nik = $_SESSION['user_nik'];
 $query = mysqli_prepare($conn, "SELECT * FROM users WHERE nik = ?");
-mysqli_stmt_bind_param($query, 's', $user_nik);
+mysqli_stmt_bind_param($query, 's', $nik); // Menggunakan $nik untuk bind parameter
 mysqli_stmt_execute($query);
 $result = mysqli_stmt_get_result($query);
 $user = mysqli_fetch_assoc($result);
 
-// Ambil data tambahan untuk Warga (misal, status qurban)
-$ambil_data_qurban_sql = "SELECT * FROM pembagian_daging WHERE nik = ?";
-$ambil_data_qurban = mysqli_prepare($conn, $ambil_data_qurban_sql);
-mysqli_stmt_bind_param($ambil_data_qurban, 's', $user_nik);
-mysqli_stmt_execute($ambil_data_qurban);
-$data_qurban = mysqli_stmt_get_result($ambil_data_qurban);
-$data_qurban = mysqli_fetch_assoc($data_qurban);
+// Pastikan data ditemukan sebelum digunakan
+if ($user) {
+    // Ambil data tambahan untuk Warga (misal, status qurban)
+    $ambil_data_qurban_sql = "SELECT * FROM pembagian_daging WHERE nik = ?";
+    $ambil_data_qurban = mysqli_prepare($conn, $ambil_data_qurban_sql);
+    mysqli_stmt_bind_param($ambil_data_qurban, 's', $nik); // Menggunakan $nik untuk bind parameter
+    mysqli_stmt_execute($ambil_data_qurban);
+    $data_qurban = mysqli_stmt_get_result($ambil_data_qurban);
+    $data_qurban = mysqli_fetch_assoc($data_qurban);
 
-// Pastikan data ditemukan
-if ($data_qurban) {
-    $jumlah_kg = $data_qurban['jumlah_kg'];
-    $status_pengambilan = $data_qurban['status_pengambilan'] == 'sudah' ? 'Sudah Diambil' : 'Belum Diambil';
+    // Pastikan data ditemukan untuk pembagian daging
+    if ($data_qurban) {
+        $jumlah_kg = $data_qurban['jumlah_kg'];
+        $status_pengambilan = $data_qurban['status_pengambilan'] == 'sudah' ? 'Sudah Diambil' : 'Belum Diambil';
+    } else {
+        $jumlah_kg = 0;
+        $status_pengambilan = 'Belum Diambil';
+    }
 } else {
-    $jumlah_kg = 0;
-    $status_pengambilan = 'Belum Diambil';
+    // Jika data pengguna tidak ditemukan, arahkan ke login atau tampilkan error
+    $error = "Pengguna tidak ditemukan. Silakan login kembali.";
+    header('Location: ../login.php'); // Atau tampilkan pesan error sesuai kebutuhan
+    exit();
 }
 ?>
 

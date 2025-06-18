@@ -3,10 +3,10 @@ session_start();
 include '../db.php';
 
 // Pastikan pengguna sudah login dan memiliki peran 'admin'
-if (!isset($_SESSION['user_nik']) || $_SESSION['role'] !== 'admin') {
-    header('Location: ../login.php');
-    exit();
-}
+// if (!isset($_SESSION['user_nik']) || $_SESSION['role'] !== 'admin') {
+//     header('Location: ../login.php');
+//     exit();
+// }
 
 // Membuat koneksi ke MySQL
 $conn = mysqli_connect($host, $username, $password, $dbname);
@@ -17,7 +17,7 @@ if (!$conn) {
 }
 
 // Ambil data pengguna yang login
-$user_nik = $_SESSION['user_nik'];
+$nik = $_SESSION['nik'];
 $query = mysqli_prepare($conn, "SELECT * FROM users WHERE nik = ?");
 mysqli_stmt_bind_param($query, 's', $user_nik);
 mysqli_stmt_execute($query);
@@ -163,7 +163,7 @@ if ($total_daging > 0) {
                         <h3>Manajemen Pengguna</h3>
                     </div>
                     <p>Kelola data pengguna yang terdaftar dalam sistem, tambah pengguna baru, dan atur hak akses.</p>
-                    <a href="manage_user.php" class="menu-btn">
+                    <a href="../admin/manage_user.php" class="menu-btn">
                         <i class="fas fa-arrow-right"></i>
                         Kelola Pengguna
                     </a>
@@ -178,7 +178,7 @@ if ($total_daging > 0) {
                         <h3>Laporan Keuangan</h3>
                     </div>
                     <p>Pantau dan kelola laporan keuangan dari iuran qurban, termasuk pemasukan dan pengeluaran.</p>
-                    <a href="financial_report.php" class="menu-btn">
+                    <a href="../admin/financial_report.php" class="menu-btn">
                         <i class="fas fa-arrow-right"></i>
                         Lihat Laporan
                     </a>
@@ -193,7 +193,7 @@ if ($total_daging > 0) {
                         <h3>Distribusi Daging</h3>
                     </div>
                     <p>Pantau dan kelola proses distribusi daging qurban kepada warga yang berhak menerima.</p>
-                    <a href="meat_distribution.php" class="menu-btn">
+                    <a href="../admin/meat_distribution.php" class="menu-btn">
                         <i class="fas fa-arrow-right"></i>
                         Kelola Distribusi
                     </a>

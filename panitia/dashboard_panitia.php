@@ -1,35 +1,36 @@
 <?php
-session_start();
-include '../db.php';  // Menghubungkan ke database
+session_start();  // Make sure session_start() is called at the top
 
-// Pastikan pengguna sudah login dan memiliki peran 'panitia'
-if (!isset($_SESSION['user_nik']) || $_SESSION['role'] !== 'panitia') {
-    header('Location: ../login.php');
-    exit();
-}
+include '../db.php';  // Connecting to the database
 
-// Membuat koneksi ke MySQL
+// // Ensure that the user is logged in and has the 'panitia' role
+// if (!isset($_SESSION['nik']) || $_SESSION['role'] !== 'panitia') {
+//     header('Location: ../login.php');  // Redirect to login if not logged in or role is not 'panitia'
+//     exit();
+// }
+
+// Connect to MySQL
 $conn = mysqli_connect($host, $username, $password, $dbname);
 
-// Mengecek apakah koneksi berhasil
+// Check if the connection is successful
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Ambil data pengguna yang login
-$user_nik = $_SESSION['user_nik'];
+// Retrieve the user's data based on their nik (from session)
+$nik = $_SESSION['nik'];  // Use the session's nik directly
 $query = mysqli_prepare($conn, "SELECT * FROM users WHERE nik = ?");
-mysqli_stmt_bind_param($query, 's', $user_nik);
+mysqli_stmt_bind_param($query, 's', $nik);  // Use the nik from the session
 mysqli_stmt_execute($query);
 $result = mysqli_stmt_get_result($query);
 $user = mysqli_fetch_assoc($result);
 
-// Ambil data tambahan untuk Panitia (misal, statistik qurban)
+// Get additional data for Panitia (such as qurban statistics)
 $ambil_data_qurban_sql = "SELECT * FROM pembagian_daging";
 $ambil_data_qurban = mysqli_query($conn, $ambil_data_qurban_sql);
 $data_qurban = mysqli_fetch_all($ambil_data_qurban, MYSQLI_ASSOC);
 
-// Menghitung total berat daging yang dibagikan
+// Calculate the total weight of the meat distributed
 $total_daging = 0;
 $jumlah_daging_sudah_diambil = 0;
 foreach ($data_qurban as $row) {
@@ -39,7 +40,7 @@ foreach ($data_qurban as $row) {
     }
 }
 
-// Menghitung persentase pembagian daging
+// Calculate the percentage of meat distributed
 $persen_daging_terdistribusi = ($total_daging > 0) ? ($jumlah_daging_sudah_diambil / $total_daging) * 100 : 0;
 
 ?>

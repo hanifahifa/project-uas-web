@@ -1,6 +1,7 @@
 <?php
-session_start();
-include 'db.php';
+session_start();  // Memulai sesi
+include 'db.php';  // Pastikan file db.php sudah ada dan benar
+
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -10,11 +11,8 @@ if (isset($_POST['submit'])) {
 
     try {
         // Query untuk mendapatkan data pengguna berdasarkan NIK
-        $sql = "SELECT * FROM users WHERE nik = ?";
-        $stmt = mysqli_prepare($koneksi, $sql);
-        mysqli_stmt_bind_param($stmt, 's', $nik); // Menggunakan 's' untuk parameter string
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
+        $sql = "SELECT * FROM users WHERE nik = '$nik'";  // Tanpa prepared statement, langsung query
+        $result = mysqli_query($conn, $sql);  // Menggunakan $conn untuk koneksi database
         $user = mysqli_fetch_assoc($result);
 
         // Cek apakah pengguna ditemukan
@@ -22,8 +20,8 @@ if (isset($_POST['submit'])) {
             // Verifikasi password dengan password yang terenkripsi di database
             if (password_verify($password, $user['password'])) {
                 // Set session data
-                $_SESSION['user_nik'] = $user['nik'];
-                $_SESSION['role'] = $user['role'];
+                $_SESSION['nik'] = $user['nik'];  // Menyimpan nik di sesi
+                $_SESSION['role'] = $user['role'];  // Menyimpan role di sesi
 
                 // Redirect ke dashboard utama
                 header('Location: Dashboard_Utama/dashboard.php');
@@ -45,7 +43,6 @@ if (isset($_POST['submit'])) {
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

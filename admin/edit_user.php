@@ -3,10 +3,10 @@ include('../db.php');
 session_start();
 
 // Hanya admin yang boleh mengakses
-if (!isset($_SESSION['user_nik']) || $_SESSION['role'] != 'admin') {
-    header('Location: ../login.php');
-    exit;
-}
+// if (!isset($_SESSION['user_nik']) || $_SESSION['role'] != 'admin') {
+//     header('Location: ../login.php');
+//     exit;
+// }
 
 // Cek apakah parameter NIK ada
 if (!isset($_GET['nik']) || empty($_GET['nik'])) {
@@ -17,10 +17,9 @@ if (!isset($_GET['nik']) || empty($_GET['nik'])) {
 $nik = $_GET['nik'];
 
 // Ambil data pengguna berdasarkan NIK
-$stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE nik = ?");
-mysqli_stmt_bind_param($stmt, 's', $nik);
-mysqli_stmt_execute($stmt);
-$user = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+$query = "SELECT * FROM users WHERE nik = '$nik'";
+$result = mysqli_query($conn, $query);
+$user = mysqli_fetch_assoc($result);
 
 // Cek apakah pengguna ditemukan
 if (!$user) {
@@ -29,10 +28,9 @@ if (!$user) {
 }
 
 // Ambil role pengguna yang sudah ada dari tabel user_roles
-$stmt_roles = mysqli_prepare($conn, "SELECT role FROM user_roles WHERE nik = ?");
-mysqli_stmt_bind_param($stmt_roles, 's', $nik);
-mysqli_stmt_execute($stmt_roles);
-$existing_roles = mysqli_fetch_all(mysqli_stmt_get_result($stmt_roles), MYSQLI_ASSOC);
+$query_roles = "SELECT role FROM user_roles WHERE nik = '$nik'";
+$result_roles = mysqli_query($conn, $query_roles);
+$existing_roles = mysqli_fetch_all($result_roles, MYSQLI_ASSOC);
 
 // Jika form disubmit, update data pengguna
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -51,23 +49,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
             // Update data pengguna di tabel users
-            $stmt_update = mysqli_prepare($conn, "UPDATE users SET name = ?, jenis_kelamin = ?, alamat = ?, password = ? WHERE nik = ?");
-            mysqli_stmt_bind_param($stmt_update, 'sssss', $name, $jenis_kelamin, $alamat, $hashed_password, $nik);
-            mysqli_stmt_execute($stmt_update);
+            $query_update = "UPDATE users SET name = '$name', jenis_kelamin = '$jenis_kelamin', alamat = '$alamat', password = '$hashed_password' WHERE nik = '$nik'";
+            mysqli_query($conn, $query_update);
 
             // Gabungkan role lama dengan role baru (tanpa menghapus role lama)
-            $merged_roles = array_unique(array_merge($existing_roles, $roles)); // Gabungkan dan hilangkan duplikasi
+            $merged_roles = array_unique(array_merge(array_column($existing_roles, 'role'), $roles)); // Gabungkan dan hilangkan duplikasi
+            $merged_roles_string = implode(',', $merged_roles); // Menggabungkan role menjadi string yang dipisahkan koma
 
             // Hapus semua role lama dari user
-            $stmt_delete_roles = mysqli_prepare($conn, "DELETE FROM user_roles WHERE nik = ?");
-            mysqli_stmt_bind_param($stmt_delete_roles, 's', $nik);
-            mysqli_stmt_execute($stmt_delete_roles);
+            $query_delete_roles = "DELETE FROM user_roles WHERE nik = '$nik'";
+            mysqli_query($conn, $query_delete_roles);
 
             // Tambahkan role baru dan lama ke user
             foreach ($merged_roles as $role) {
-                $stmt_insert_role = mysqli_prepare($conn, "INSERT INTO user_roles (nik, role) VALUES (?, ?)");
-                mysqli_stmt_bind_param($stmt_insert_role, 'ss', $nik, $role);
-                mysqli_stmt_execute($stmt_insert_role);
+                $query_insert_role = "INSERT INTO user_roles (nik, role) VALUES ('$nik', '$role')";
+                mysqli_query($conn, $query_insert_role);
             }
 
             header('Location: manage_user.php?success=user_berhasil_diedit');
@@ -120,10 +116,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="form-group">
             <label for="role">Role</label>
             <select id="role" name="role[]" multiple required>
-                <option value="admin" <?= in_array('admin', $existing_roles) ? 'selected' : '' ?>>Admin</option>
-                <option value="warga" <?= in_array('warga', $existing_roles) ? 'selected' : '' ?>>Warga</option>
-                <option value="panitia" <?= in_array('panitia', $existing_roles) ? 'selected' : '' ?>>Panitia</option>
-                <option value="berqurban" <?= in_array('berqurban', $existing_roles) ? 'selected' : '' ?>>Berqurban</option>
+                <option value="admin" <?= in_array('admin', array_column($existing_roles, 'role')) ? 'selected' : '' ?>>Admin</option>
+                <option value="warga" <?= in_array('warga', array_column($existing_roles, 'role')) ? 'selected' : '' ?>>Warga</option>
+                <option value="panitia" <?= in_array('panitia', array_column($existing_roles, 'role')) ? 'selected' : '' ?>>Panitia</option>
+                <option value="berqurban" <?= in_array('berqurban', array_column($existing_roles, 'role')) ? 'selected' : '' ?>>Berqurban</option>
             </select>
         </div>
         <div class="btn-group">
