@@ -59,6 +59,7 @@ if ($user) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Warga - QURBANA</title>
+    <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -80,6 +81,7 @@ if ($user) {
         </div>
 
         <!-- User Information Card -->
+        <!-- User Information Card -->
         <div class="user-info-card">
             <h3>
                 <div class="icon">
@@ -87,27 +89,22 @@ if ($user) {
                 </div>
                 Informasi Pribadi
             </h3>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="user-detail">
-                        <span class="user-label">Nama Lengkap</span>
-                        <span class="user-value"><?php echo htmlspecialchars($user['name']); ?></span>
-                    </div>
-                    <div class="user-detail">
-                        <span class="user-label">NIK</span>
-                        <span class="user-value"><?php echo htmlspecialchars($user['nik']); ?></span>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="user-detail">
-                        <span class="user-label">Jenis Kelamin</span>
-                        <span class="user-value"><?php echo ($user['jenis_kelamin'] == 'L') ? 'Laki-laki' : 'Perempuan'; ?></span>
-                    </div>
-                    <div class="user-detail">
-                        <span class="user-label">Alamat</span>
-                        <span class="user-value"><?php echo htmlspecialchars($user['alamat']); ?></span>
-                    </div>
-                </div>
+            <div class="user-detail">
+                <span class="user-label">Nama Lengkap</span>
+                <span class="user-value"><?php echo htmlspecialchars($user['name']); ?></span>
+            </div>
+            <div class="user-detail">
+                <span class="user-label">NIK</span>
+                <span class="user-value"><?php echo htmlspecialchars($user['nik']); ?></span>
+            </div>
+            <div class="user-detail">
+                <span class="user-label">Jenis Kelamin</span>
+                <span
+                    class="user-value"><?php echo ($user['jenis_kelamin'] == 'L') ? 'Laki-laki' : 'Perempuan'; ?></span>
+            </div>
+            <div class="user-detail">
+                <span class="user-label">Alamat</span>
+                <span class="user-value"><?php echo htmlspecialchars($user['alamat']); ?></span>
             </div>
         </div>
 
@@ -124,7 +121,8 @@ if ($user) {
                 <div class="meat-weight"><?php echo $jumlah_kg; ?> Kg</div>
                 <p class="meat-subtitle">Jumlah daging qurban yang akan Anda terima</p>
                 <div class="text-center">
-                    <span class="status-badge <?php echo ($status_pengambilan == 'Sudah Diambil') ? 'status-success' : 'status-warning'; ?>">
+                    <span
+                        class="status-badge <?php echo ($status_pengambilan == 'Sudah Diambil') ? 'status-success' : 'status-warning'; ?>">
                         Status: <?php echo $status_pengambilan; ?>
                     </span>
                 </div>
@@ -143,7 +141,8 @@ if ($user) {
                     $qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode("NIK: " . $user['nik'] . " - " . $user['name']);
                     ?>
                     <img src="<?php echo $qr_url; ?>" alt="QR Code" width="160">
-                    <p class="text-muted mb-0" style="font-size: 0.9rem;">Tunjukkan QR Code ini saat pengambilan daging qurban</p>
+                    <p class="text-muted mb-0" style="font-size: 0.9rem;">Tunjukkan QR Code ini saat pengambilan daging
+                        qurban</p>
                 </div>
             </div>
         </div>

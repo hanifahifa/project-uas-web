@@ -16,12 +16,10 @@
 
 
 -- Dumping database structure for qurbana_app
-DROP DATABASE IF EXISTS `qurbana_app`;
 CREATE DATABASE IF NOT EXISTS `qurbana_app` /*!40100 DEFAULT CHARACTER SET big5 COLLATE big5_bin */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `qurbana_app`;
 
 -- Dumping structure for table qurbana_app.hewan_qurban
-DROP TABLE IF EXISTS `hewan_qurban`;
 CREATE TABLE IF NOT EXISTS `hewan_qurban` (
   `id` int NOT NULL AUTO_INCREMENT,
   `jenis` enum('kambing','sapi') NOT NULL,
@@ -34,18 +32,17 @@ CREATE TABLE IF NOT EXISTS `hewan_qurban` (
   PRIMARY KEY (`id`),
   KEY `fk_hewan_qurban_sumber` (`sumber`),
   CONSTRAINT `fk_hewan_qurban_sumber` FOREIGN KEY (`sumber`) REFERENCES `users` (`nik`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=latin1;
 
 -- Dumping data for table qurbana_app.hewan_qurban: ~4 rows (approximately)
 DELETE FROM `hewan_qurban`;
 INSERT INTO `hewan_qurban` (`id`, `jenis`, `jumlah`, `harga_per_ekor`, `biaya_admin_per_ekor`, `sumber`, `created_at`, `keterangan`) VALUES
-	(21, 'sapi', 1, 3000000, 100000, '6', '2025-06-04 14:29:05', 'patungan'),
-	(22, 'sapi', 1, 3000000, 100000, '4', '2025-06-04 14:31:12', 'patungan'),
-	(23, 'sapi', 1, 3000000, 100000, '4', '2025-06-08 08:53:45', ''),
-	(24, 'sapi', 1, 3000000, 100000, '7777', '2025-06-13 04:34:52', 'ifa');
+	(25, 'sapi', 1, 3000000, 100000, NULL, '2025-06-17 15:36:00', ''),
+	(26, 'sapi', 1, 3000000, 100000, NULL, '2025-06-17 15:36:12', ''),
+	(27, 'kambing', 1, 2700000, 50000, NULL, '2025-06-17 15:36:32', ''),
+	(28, 'sapi', 1, 3000000, 100000, '12', '2025-06-18 07:49:00', '');
 
 -- Dumping structure for table qurbana_app.keuangan_keluar
-DROP TABLE IF EXISTS `keuangan_keluar`;
 CREATE TABLE IF NOT EXISTS `keuangan_keluar` (
   `id` int NOT NULL AUTO_INCREMENT,
   `tanggal` timestamp NOT NULL,
@@ -54,15 +51,15 @@ CREATE TABLE IF NOT EXISTS `keuangan_keluar` (
   `harga` bigint NOT NULL,
   `keterangan` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=latin1;
 
--- Dumping data for table qurbana_app.keuangan_keluar: ~1 rows (approximately)
+-- Dumping data for table qurbana_app.keuangan_keluar: ~2 rows (approximately)
 DELETE FROM `keuangan_keluar`;
 INSERT INTO `keuangan_keluar` (`id`, `tanggal`, `keperluan`, `jumlah`, `harga`, `keterangan`) VALUES
-	(27, '2025-06-04 07:31:29', 'beli es', 4, 2000, 'haus');
+	(27, '2025-06-04 07:31:29', 'beli es', 4, 2000, 'haus'),
+	(28, '2025-06-16 17:00:00', 'baso aci', 80, 90000, '');
 
 -- Dumping structure for table qurbana_app.pembagian_daging
-DROP TABLE IF EXISTS `pembagian_daging`;
 CREATE TABLE IF NOT EXISTS `pembagian_daging` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nik` varchar(20) NOT NULL,
@@ -73,41 +70,58 @@ CREATE TABLE IF NOT EXISTS `pembagian_daging` (
   PRIMARY KEY (`id`),
   KEY `nik` (`nik`),
   CONSTRAINT `pembagian_daging_ibfk_1` FOREIGN KEY (`nik`) REFERENCES `users` (`nik`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table qurbana_app.pembagian_daging: ~3 rows (approximately)
+-- Dumping data for table qurbana_app.pembagian_daging: ~4 rows (approximately)
 DELETE FROM `pembagian_daging`;
 INSERT INTO `pembagian_daging` (`id`, `nik`, `role_penerima`, `jumlah_kg`, `qr_code`, `status_pengambilan`) VALUES
-	(17, '6', 'warga', 1.00, 'default_qr_code.png', 'belum'),
-	(18, '99', 'warga', 1.00, 'default_qr_code.png', 'belum'),
-	(19, '7777', 'warga', 1.00, 'default_qr_code.png', 'belum');
+	(22, '12345678910', 'warga', 1.00, 'default_qr_code.png', 'belum'),
+	(37, '2', 'warga', 1.00, 'default_qr_code.png', 'belum'),
+	(39, '12', 'warga', 1.00, 'default_qr_code.png', 'sudah'),
+	(40, '13', 'warga', 1.00, 'default_qr_code.png', 'belum');
 
 -- Dumping structure for table qurbana_app.users
-DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `nik` varchar(20) NOT NULL,
   `name` varchar(100) NOT NULL,
   `jenis_kelamin` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `alamat` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role` enum('admin','warga','panitia','berqurban') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'warga',
+  `role` enum('admin','warga','panitia') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'warga',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`nik`)
+  PRIMARY KEY (`nik`),
+  UNIQUE KEY `nik` (`nik`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table qurbana_app.users: ~7 rows (approximately)
+-- Dumping data for table qurbana_app.users: ~4 rows (approximately)
 DELETE FROM `users`;
 INSERT INTO `users` (`nik`, `name`, `jenis_kelamin`, `alamat`, `password`, `role`, `created_at`) VALUES
-	('1', 'admin', 'p', 'a', '123', 'admin', '2025-06-01 08:04:40'),
-	('2', 'panitia', 'p', 'a', '123', 'panitia', '2025-06-01 08:05:19'),
-	('3', 'warga', 'p', 'a', '123', 'warga', '2025-06-01 08:05:44'),
-	('4', 'berqurban', 'p', 'a', '123', 'berqurban', '2025-06-01 08:06:09'),
-	('6', 'ifa', 'L', 's', '123', 'warga', '2025-06-03 21:06:51'),
-	('7777', 'ifa', 'P', '1', '123', 'berqurban', '2025-06-13 04:34:31'),
-	('99', 'p', 'P', 'p', '122', 'warga', '2025-06-08 09:59:54');
+	('12', '12', 'P', '12', '$2y$10$9NriNKJnf/sjPmG9ySKee.xhyyiT2L9QJFxIGLz1YR7UzOA2KebYq', 'warga', '2025-06-18 07:17:35'),
+	('12345678910', 'Admin Desa', 'P', 'Sidoarjo', '$2y$10$72.zKMnQ1lpf0Wp2/SmLaumfWHt.C1uDYSFG1XuimXCaGlNU/NqRO', 'admin', '2025-06-16 16:23:21'),
+	('13', '12', 'L', '12', '$2y$10$XYa38DGBr9HVm6/M02fE1./33y2dI3mxg02qDwjG/H0Viu6SYRPei', 'warga', '2025-06-18 07:43:56'),
+	('2', '2', 'L', '2', '$2y$10$v4Zhd/LFMQYTFsXVsEtDTe3MFqfzaL.4fYyKfkDhYDBpYM/BP8QdC', 'admin', '2025-06-18 05:51:23');
+
+-- Dumping structure for table qurbana_app.user_roles
+CREATE TABLE IF NOT EXISTS `user_roles` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nik` varchar(20) NOT NULL,
+  `role` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_roles_ibfk_1` (`nik`),
+  CONSTRAINT `user_roles_ibfk_1` FOREIGN KEY (`nik`) REFERENCES `users` (`nik`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table qurbana_app.user_roles: ~6 rows (approximately)
+DELETE FROM `user_roles`;
+INSERT INTO `user_roles` (`id`, `nik`, `role`) VALUES
+	(15, '12345678910', 'admin'),
+	(96, '2', 'admin'),
+	(99, '13', 'warga'),
+	(100, '12', 'warga'),
+	(101, '12', 'panitia'),
+	(102, '12', 'berqurban');
 
 -- Dumping structure for trigger qurbana_app.after_user_insert
-DROP TRIGGER IF EXISTS `after_user_insert`;
 SET @OLDTMP_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 DELIMITER //
 CREATE TRIGGER `after_user_insert` AFTER INSERT ON `users` FOR EACH ROW BEGIN

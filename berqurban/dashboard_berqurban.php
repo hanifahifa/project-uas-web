@@ -52,6 +52,7 @@ $status_pengambilan = $data_daging ? ($data_daging['status_pengambilan'] == 'sud
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Berqurban - QURBANA</title>
+    <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -72,34 +73,26 @@ $status_pengambilan = $data_daging ? ($data_daging['status_pengambilan'] == 'sud
         </div>
 
         <!-- Data Diri Pengguna -->
-        <div class="user-info">
-            <h4>
-                <div class="icon">
-                    <i class="fas fa-user"></i>
-                </div>
-                Informasi Pribadi
-            </h4>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="user-detail">
-                        <h5>Nama Lengkap:</h5>
-                        <p><?php echo htmlspecialchars($user['name'] ?? 'Data tidak ditemukan'); ?></p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="user-detail">
-                        <h5>NIK:</h5>
-                        <p><?php echo htmlspecialchars($user['nik'] ?? 'Data tidak ditemukan'); ?></p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="user-detail">
-                        <h5>Alamat:</h5>
-                        <p><?php echo htmlspecialchars($user['alamat'] ?? 'Data tidak ditemukan'); ?></p>
-                    </div>
-                </div>
-            </div>
+<div class="user-info">
+    <h4>
+        <div class="icon">
+            <i class="fas fa-user"></i>
         </div>
+        Informasi Pribadi
+    </h4>
+    <div class="user-detail">
+        <span class="user-label">Nama Lengkap</span>
+        <span class="user-value"><?php echo htmlspecialchars($user['name'] ?? 'Data tidak ditemukan'); ?></span>
+    </div>
+    <div class="user-detail">
+        <span class="user-label">NIK</span>
+        <span class="user-value"><?php echo htmlspecialchars($user['nik'] ?? 'Data tidak ditemukan'); ?></span>
+    </div>
+    <div class="user-detail">
+        <span class="user-label">Alamat</span>
+        <span class="user-value"><?php echo htmlspecialchars($user['alamat'] ?? 'Data tidak ditemukan'); ?></span>
+    </div>
+</div>
 
         <!-- Dashboard Cards -->
         <div class="dashboard-grid">
