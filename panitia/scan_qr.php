@@ -243,7 +243,7 @@ if (isset($_GET['qr']) && !empty($_GET['qr'])) {
 
             <div class="row">
                 <div class="col-md-8">
-                    <div id="qr-reader" style="width: 100%; height: 300px;"></div>
+                    <div id="qr-reader" style="width: 100%; height: 0px;"></div>
                     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
                     <div id="reader" style="width: 300px;"></div>
 
