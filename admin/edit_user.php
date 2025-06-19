@@ -149,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
             outline: none;
         }
-        ..role-options {
+        .role-options {
             display: flex;
             flex-direction: column;
             gap: 12px;
