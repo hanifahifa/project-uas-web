@@ -1,33 +1,30 @@
 <?php
-// Menghubungkan ke database menggunakan MySQLi
 include '../db.php';
 session_start();
 
-// Hanya admin yang dapat mengakses
+// Cek login
 // if (!isset($_SESSION['user_nik']) || $_SESSION['role'] !== 'admin') {
 //     header('Location: ../login.php');
 //     exit();
 // }
 
-// Membuat koneksi ke MySQL
+// Koneksi ke DB
 $conn = mysqli_connect($host, $username, $password, $dbname);
-
-// Mengecek apakah koneksi berhasil
 if (!$conn) {
   die("Connection failed: " . mysqli_connect_error());
 }
 
-// Ambil data pengguna yang login
+// Ambil user yang login
 $nik = $_SESSION['nik'];
-$query = "SELECT * FROM users WHERE nik = '$nik'";
-$result = mysqli_query($conn, $query);
-$user = mysqli_fetch_assoc($result);
+$query_user = "SELECT * FROM users WHERE nik = '$nik'";
+$result_user = mysqli_query($conn, $query_user);
+$user = mysqli_fetch_assoc($result_user);
 
-// Tentukan laman dashboard berdasarkan peran
+// Tentukan URL dashboard
 $dashboard_url = ($_SESSION['role'] == 'admin') ? '../admin/dashboard_admin.php' : '../panitia/dashboard_panitia.php';
 
-// Ambil data distribusi daging dan urutkan berdasarkan id terkecil
-$query_daging = "SELECT * FROM pembagian_daging ORDER BY id ASC";  // Ganti pengurutan menjadi ASC
+// Ambil data distribusi daging
+$query_daging = "SELECT * FROM pembagian_daging ORDER BY id ASC";
 $result_daging = mysqli_query($conn, $query_daging);
 
 $daging_data = [];
@@ -35,8 +32,6 @@ if ($result_daging) {
   while ($row = mysqli_fetch_assoc($result_daging)) {
     $daging_data[] = $row;
   }
-} else {
-  echo "Query Pembagian Daging Error!";
 }
 ?>
 
@@ -45,18 +40,26 @@ if ($result_daging) {
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Distribusi Daging - QURBANA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Google Fonts: Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <style>
     body {
-      background-color: #f0f8f0;
-      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #f0f8f0, #e0f0e0);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: auto;
     }
 
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: 20px auto;
       padding: 20px;
     }
@@ -65,109 +68,130 @@ if ($result_daging) {
       background-color: #28a745;
       color: white;
       padding: 15px;
-      border-radius: 10px 10px 0 0;
+      border-radius: 12px 12px 0 0;
       text-align: center;
       margin-bottom: 20px;
       position: relative;
-      overflow: hidden; /* Menangani overflow tombol */
     }
 
     .back-button {
-      color: white;
-      text-decoration: none;
-      font-size: 0.9em;
       position: absolute;
       left: 20px;
       top: 50%;
       transform: translateY(-50%);
-      padding: 5px 10px;
+      padding: 6px 14px;
       border: 2px solid white;
-      border-radius: 5px;
-      background: transparent;
-      transition: all 0.3s ease;
+      border-radius: 6px;
+      background-color: transparent;
+      color: white;
+      text-decoration: none;
+      font-size: 0.9em;
+      transition: all 0.3s ease-in-out;
     }
 
     .back-button:hover {
-      color: #e0e0e0;
-      border-color: #e0e0e0;
-    }
-
-    .header-section h1 {
-      font-size: 1.5em;
-      margin: 0;
-    }
-
-    .header-section p {
-      font-size: 0.9em;
-      margin: 5px 0 0;
+      background-color: white;
+      color: #28a745;
     }
 
     .table-section {
       background-color: white;
-      border-radius: 10px;
       padding: 20px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .table {
-      margin-bottom: 0;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     }
 
     .table th {
       background-color: #28a745;
       color: white;
+      font-weight: 500;
+      text-align: center;
     }
 
     .table td {
       vertical-align: middle;
+      text-align: center;
+    }
+
+    .badge {
+      font-size: 0.85em;
+      padding: 6px 10px;
+      border-radius: 10px;
     }
 
     .btn-warning {
-      background-color: #ffc107;
-      border-color: #ffc107;
-      color: #333;
-      padding: 5px 10px;
-      border-radius: 5px;
+      font-size: 0.85em;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 500;
     }
 
     .btn-warning:hover {
       background-color: #e0a800;
-      border-color: #e0a800;
+      border-color: #d39e00;
+    }
+
+    .text-muted {
+      font-style: Segoe UI, Arial, sans-serif;
     }
   </style>
 </head>
 
+
 <body>
   <div class="container">
-    <!-- Header Section -->
+    <!-- Header -->
     <div class="header-section">
-      <a href="<?php echo $dashboard_url; ?>" class="back-button"><i class="fas fa-arrow-left"></i> Kembali</a>
+      <a href="<?= $dashboard_url ?>" class="back-button"><i class="fas fa-arrow-left me-1"></i>Kembali</a>
       <h1>Distribusi Daging</h1>
       <p>Kelola dan pantau distribusi daging qurban</p>
     </div>
 
-    <!-- Data Pembagian Daging -->
+    <!-- Tabel Distribusi -->
     <div class="table-section">
-      <table class="table table-hover">
+      <table class="table table-hover table-bordered">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>No</th>
             <th>NIK Warga</th>
             <th>Status Pengambilan</th>
+            <th>Tanggal Pengambilan</th>
             <th>Aksi</th>
           </tr>
         </thead>
         <tbody>
-          <?php foreach ($daging_data as $row): ?>
+          <?php if (count($daging_data) > 0): ?>
+            <?php $no = 1;
+            foreach ($daging_data as $row): ?>
+              <tr>
+                <td><?= $no++ ?></td>
+                <td><?= htmlspecialchars($row['nik']) ?></td>
+                <td>
+                  <span class="badge <?= $row['status_pengambilan'] == 'sudah' ? 'bg-success' : 'bg-warning text-dark' ?>">
+                    <?= ucfirst(htmlspecialchars($row['status_pengambilan'])) ?>
+                  </span>
+                </td>
+                <td>
+                  <?php
+                  if (!empty($row['tanggal_pengambilan'])) {
+                    echo date('d/m/Y H:i', strtotime($row['tanggal_pengambilan']));
+                  } else {
+                    echo '<span class="text-muted">-</span>';
+                  }
+                  ?>
+                </td>
+                <td>
+                  <a href="../admin/edit_meat_distribution.php?id=<?= urlencode($row['id']) ?>" class="btn btn-warning">
+                    <i class="fas fa-edit me-1"></i>Edit
+                  </a>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          <?php else: ?>
             <tr>
-              <td><?php echo htmlspecialchars($row['id']); ?></td>
-              <td><?php echo htmlspecialchars($row['nik']); ?></td>
-              <td><?php echo htmlspecialchars($row['status_pengambilan']); ?></td>
-              <td>
-                <a href="../admin/edit_meat_distribution.php?id=<?php echo $row['id']; ?>" class="btn btn-warning">Edit</a>
-              </td>
+              <td colspan="5" class="text-center text-muted">Belum ada data pembagian daging.</td>
             </tr>
-          <?php endforeach; ?>
+          <?php endif; ?>
         </tbody>
       </table>
     </div>

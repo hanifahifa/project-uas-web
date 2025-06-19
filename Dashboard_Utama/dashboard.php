@@ -206,6 +206,27 @@ while ($row = mysqli_fetch_assoc($result)) {
         .role-badge:hover {
             transform: scale(1.1);
         }
+
+
+        .logout-btn {
+            background: linear-gradient(135deg, #4CAF50, #2ECC71);
+            color: white;
+            padding: 8px 18px;
+            font-size: 0.95rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #2ECC71, #27AE60);
+            box-shadow: 0 6px 15px rgba(39, 174, 96, 0.5);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 
@@ -257,12 +278,13 @@ while ($row = mysqli_fetch_assoc($result)) {
 
     <!-- Konten -->
     <div class="content">
-        <div class="header">
-            <a href="../logout.php" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
+        <div class="header" style="display: flex; justify-content: space-between; align-items: center;">
             <h1>Selamat Datang di Dashboard!</h1>
+            <a href="../logout.php" class="logout-btn">
+                <i class="fas fa-sign-out-alt me-1"></i> Logout
+            </a>
         </div>
+
         <div class="content-body">
             <p>
                 Anda login sebagai:
@@ -273,6 +295,8 @@ while ($row = mysqli_fetch_assoc($result)) {
                 <?php endif; ?>
             </p>
         </div>
+    </div>
+
 
     </div>
 </body>
