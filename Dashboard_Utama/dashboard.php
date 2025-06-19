@@ -43,6 +43,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             min-height: 100vh;
             overflow: hidden;
         }
+
         .sidebar {
             width: 250px;
             background: linear-gradient(180deg, #28a745, #1f7a38);
@@ -53,28 +54,33 @@ while ($row = mysqli_fetch_assoc($result)) {
             top: 20px;
             left: 20px;
             border-radius: 20px;
-            overflow: hidden;
+            overflow: auto;
             box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
             transition: transform 0.3s ease;
         }
+
         .sidebar:hover {
             transform: translateX(-5px);
         }
+
         .sidebar-header {
             padding: 25px 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .sidebar-header h4 {
             margin: 0;
             font-weight: 600;
             font-size: 1.2em;
             color: white;
         }
+
         .sidebar .list-group {
             background: transparent;
             border: none;
             padding: 20px 0;
         }
+
         .sidebar .list-group-item {
             background-color: transparent;
             border: none;
@@ -84,6 +90,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             border-radius: 10px;
             transition: all 0.3s ease;
         }
+
         .sidebar .list-group-item a {
             color: white;
             text-decoration: none;
@@ -95,13 +102,16 @@ while ($row = mysqli_fetch_assoc($result)) {
             border-radius: 10px;
             transition: all 0.3s ease;
         }
+
         .sidebar .list-group-item a i {
             margin-right: 10px;
         }
+
         .sidebar .list-group-item:hover a {
             background-color: rgba(255, 255, 255, 0.15);
             transform: translateX(5px);
         }
+
         .content {
             margin-left: 290px;
             padding: 0;
@@ -113,10 +123,19 @@ while ($row = mysqli_fetch_assoc($result)) {
             overflow: hidden;
             animation: fadeIn 0.5s ease-in-out;
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         .header {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
@@ -126,6 +145,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             border-radius: 20px 20px 0 0;
             position: relative;
         }
+
         .logout-btn {
             position: absolute;
             top: 15px;
@@ -138,22 +158,27 @@ while ($row = mysqli_fetch_assoc($result)) {
             align-items: center;
             transition: color 0.3s ease, transform 0.3s ease;
         }
+
         .logout-btn i {
             margin-right: 5px;
         }
+
         .logout-btn:hover {
             color: #ffeb3b;
             transform: translateY(-2px);
         }
+
         .header h1 {
             color: white;
             font-size: 2.2em;
             margin: 0;
             font-weight: 600;
         }
+
         .content-body {
             padding: 30px;
         }
+
         .content-body p {
             color: #333;
             font-size: 1.1em;
@@ -165,6 +190,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             border-left: 4px solid #28a745;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
+
         .role-badge {
             display: inline-block;
             background-color: #28a745;
@@ -176,6 +202,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             margin: 2px;
             transition: transform 0.3s ease;
         }
+
         .role-badge:hover {
             transform: scale(1.1);
         }
@@ -184,36 +211,49 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 <body>
     <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h4>Dashboard Menu</h4>
+    <div class="sidebar bg-success p-4" style="min-height: 100vh; width: 250px;">
+        <div class="sidebar-header mb-4 text-center">
+            <h4 class="text-white"><i class="fas fa-mosque me-2"></i>Qurbana Menu</h4>
         </div>
-        <ul class="list-group">
+        <ul class="list-group list-group-flush">
             <?php if (in_array('admin', $roles)): ?>
-                <li class="list-group-item">
-                    <a href="../admin/dashboard_admin.php"><i class="fas fa-tachometer-alt"></i> Dashboard Admin</a>
+                <li class="list-group-item bg-success border-0">
+                    <a href="../admin/dashboard_admin.php"
+                        class="text-white text-decoration-none d-block py-2 px-3 rounded hover-light">
+                        <i class="fas fa-user-shield me-2"></i> Dashboard Admin
+                    </a>
                 </li>
             <?php endif; ?>
 
             <?php if (in_array('panitia', $roles)): ?>
-                <li class="list-group-item">
-                    <a href="../panitia/dashboard_panitia.php"><i class="fas fa-users"></i> Dashboard Panitia</a>
+                <li class="list-group-item bg-success border-0">
+                    <a href="../panitia/dashboard_panitia.php"
+                        class="text-white text-decoration-none d-block py-2 px-3 rounded hover-light">
+                        <i class="fas fa-users me-2"></i> Dashboard Panitia
+                    </a>
                 </li>
             <?php endif; ?>
 
             <?php if (in_array('berqurban', $roles)): ?>
-                <li class="list-group-item">
-                    <a href="../Berqurban/dashboard_berqurban.php"><i class="fas fa-cow"></i> Dashboard Berqurban</a>
+                <li class="list-group-item bg-success border-0">
+                    <a href="../berqurban/dashboard_berqurban.php"
+                        class="text-white text-decoration-none d-block py-2 px-3 rounded hover-light">
+                        <i class="fas fa-cow me-2"></i>🐮 Dashboard Berqurban
+                    </a>
                 </li>
             <?php endif; ?>
 
             <?php if (in_array('warga', $roles)): ?>
-                <li class="list-group-item">
-                    <a href="../warga/dashboard_warga.php"><i class="fas fa-home"></i> Dashboard Warga</a>
+                <li class="list-group-item bg-success border-0">
+                    <a href="../warga/dashboard_warga.php"
+                        class="text-white text-decoration-none d-block py-2 px-3 rounded hover-light">
+                        <i class="fas fa-home me-2"></i> Dashboard Warga
+                    </a>
                 </li>
             <?php endif; ?>
         </ul>
     </div>
+
 
     <!-- Konten -->
     <div class="content">
@@ -225,12 +265,15 @@ while ($row = mysqli_fetch_assoc($result)) {
         </div>
         <div class="content-body">
             <p>
-                Anda login sebagai: 
-                <?php foreach ($roles as $role): ?>
-                    <span class="role-badge"><?php echo ucfirst($role); ?></span>
-                <?php endforeach; ?>
+                Anda login sebagai:
+                <?php if (!empty($roles)): ?>
+                    <?php foreach (array_unique($roles) as $role): ?>
+                        <span class="role-badge"><?php echo ucfirst($role); ?></span>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </p>
         </div>
+
     </div>
 </body>
 

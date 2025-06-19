@@ -118,7 +118,7 @@ if ($total_daging > 0) {
             box-shadow: 0 20px 25px -5px var(--shadow-color), 0 10px 10px -5px var(--shadow-color);
             margin-bottom: 2rem;
             position: relative;
-            overflow: hidden;
+            overflow: auto;
         }
 
         .header-section::before {

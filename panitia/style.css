@@ -217,6 +217,14 @@ body {
     color: #666;
 }
 
+.hover-light:hover {
+    background-color: #ffffff33 !important;
+    color: #fff !important;
+    text-decoration: none;
+    transition: background-color 0.2s ease-in-out;
+}
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .dashboard-container {

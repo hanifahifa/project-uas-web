@@ -2,11 +2,11 @@
 session_start();
 include '../db.php';
 
-// Pastikan pengguna sudah login dan memiliki peran 'warga'
-if (!isset($_SESSION['nik']) || $_SESSION['role'] !== 'warga') {
-    header('Location: ../login.php');
-    exit();
-}
+// // Pastikan pengguna sudah login dan memiliki peran 'warga'
+// if (!isset($_SESSION['nik']) || $_SESSION['role'] !== 'warga') {
+//     header('Location: ../login.php');
+//     exit();
+// }
 
 // Ambil nik dari session
 $nik = $_SESSION['nik'];

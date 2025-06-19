@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       box-shadow: 0 8px 32px rgba(76, 175, 80, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
       margin-bottom: 25px;
       position: relative;
-      overflow: hidden;
+      overflow: auto;
     }
 
     .header-section::before {

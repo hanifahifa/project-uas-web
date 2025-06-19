@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             display: flex;
             justify-content: center;
             min-height: 100vh;
-            overflow: hidden;
+            overflow: auto;
         }
         .container {
             max-width: 500px;

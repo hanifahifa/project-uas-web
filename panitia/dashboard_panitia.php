@@ -64,11 +64,16 @@ $persen_daging_terdistribusi = ($total_daging > 0) ? ($jumlah_daging_sudah_diamb
             </div>
 
             <!-- Kembali Button -->            
-            <a href="../Dashboard_Utama/dashboard.php" class="kembali-btn">
+            <!-- <a href="../Dashboard_Utama/dashboard.php" class="kembali-btn">
                 <i class="fas fa-arrow-left"></i> Kembali
                 $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
                 $dashboard_link = ($role === 'panitia') ? '../Dashboard_Utama/dashboard.php' : '../dashboard.php'; // Modify as needed
+             -->
 
+            <a href="../Dashboard_Utama/dashboard.php" class="kembali-btn">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+            
             <!-- Logout Button -->
             <a href="../logout.php" class="logout-btn">
                 <i class="fas fa-sign-out-alt"></i> Logout

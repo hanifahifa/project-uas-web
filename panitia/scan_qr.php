@@ -1,45 +1,51 @@
 <?php
 session_start();
-include '../db.php';
+// include '../db.php'; 
 
-// Pastikan pengguna sudah login dan memiliki peran 'panitia'
-// if (!isset($_SESSION['user_nik']) || $_SESSION['role'] !== 'panitia') {
-//     header('Location: ../login.php');
-//     exit();
+// // Cek jika koneksi belum ada
+// if (!isset($conn)) {
+//     die("Koneksi database tidak ditemukan.");
 // }
 
-// Handle konfirmasi pengambilan
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_pickup'])) {
-    $id_pembagian = $_POST['id_pembagian'];
+// // Handle konfirmasi pengambilan
+// if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_pickup'])) {
+//     $id_pembagian = $_POST['id_pembagian'];
 
-    try {
-        $update_sql = "UPDATE pembagian_daging SET status_pengambilan = 'sudah', tanggal_pengambilan = NOW() WHERE id = ?";
-        $update_stmt = $pdo->prepare($update_sql);
-        $update_stmt->execute([$id_pembagian]);
+//     $update_sql = "UPDATE pembagian_daging SET status_pengambilan = 'sudah', tanggal_pengambilan = NOW() WHERE id = ?";
+//     $stmt = $conn->prepare($update_sql);
+//     $stmt->bind_param("i", $id_pembagian);
 
-        $success_message = "Konfirmasi pengambilan berhasil!";
-    } catch (Exception $e) {
-        $error_message = "Terjadi kesalahan: " . $e->getMessage();
-    }
-}
+//     if ($stmt->execute()) {
+//         $success_message = "Konfirmasi pengambilan berhasil!";
+//     } else {
+//         $error_message = "Terjadi kesalahan: " . $stmt->error;
+//     }
 
-// Handle pencarian berdasarkan QR data
-$qr_data = null;
+//     $stmt->close();
+// }
+
+// <?php
+include '../db.php'; // koneksi ke database
 $meat_info = null;
 
-if (isset($_GET['qr']) && !empty($_GET['qr'])) {
-    $qr_data = $_GET['qr'];
+if (isset($_GET['qr'])) {
+    $qr_code = $_GET['qr'];
 
-    // Cari data berdasarkan QR code (asumsi QR berisi ID pembagian)
-    $search_sql = "SELECT pd.*, u.nama as nama_penerima, u.alamat 
-                   FROM pembagian_daging pd 
-                   LEFT JOIN users u ON pd.nik_penerima = u.nik 
-                   WHERE pd.id = ? OR pd.nik_penerima = ?";
-    $search_stmt = $pdo->prepare($search_sql);
-    $search_stmt->execute([$qr_data, $qr_data]);
-    $meat_info = $search_stmt->fetch();
+    $stmt = $conn->prepare("
+        SELECT pd.*, u.name AS nama_penerima, u.alamat, u.jenis_kelamin
+        FROM pembagian_daging pd
+        JOIN users u ON pd.nik = u.nik
+        WHERE pd.nik = ?
+    ");
+    $stmt->bind_param("s", $qr_code);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $meat_info = $result->fetch_assoc();
 }
 ?>
+
+
+
 
 <!DOCTYPE html>
 <html lang="id">
@@ -198,6 +204,27 @@ if (isset($_GET['qr']) && !empty($_GET['qr'])) {
     </style>
 </head>
 
+
+
+
+<script>
+    document.getElementById('manual-form').addEventListener('submit', function (e) {
+        e.preventDefault(); // stop form from reloading page
+
+        const qrCode = document.getElementById('manual-qr').value;
+
+        fetch('fetch_user_data.php?qr=' + encodeURIComponent(qrCode))
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('manual-result').innerHTML = data;
+            })
+            .catch(error => {
+                document.getElementById('manual-result').innerHTML =
+                    `<div class="alert alert-danger">Terjadi kesalahan: ${error}</div>`;
+            });
+    });
+</script>
+
 <body>
     <div class="container">
         <!-- Header -->
@@ -241,9 +268,9 @@ if (isset($_GET['qr']) && !empty($_GET['qr'])) {
                 Scanner QR Code
             </h4>
 
-            <div class="row">
+            <div class="coulumn-md-4" style="display: flex; justify-content: center; align-items: center; gap: 1rem;">
                 <div class="col-md-8">
-                    <div id="qr-reader" style="width: 100%; height: 300px;"></div>
+                    <div id="qr-reader" style="width: 100%; height: 0px;"></div>
                     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
                     <div id="reader" style="width: 300px;"></div>
 
@@ -261,205 +288,203 @@ if (isset($_GET['qr']) && !empty($_GET['qr'])) {
                         html5QrcodeScanner.render(onScanSuccess);
                     </script>
 
-                    <div class="d-flex gap-2 mt-3">
-                        <button id="start-scan" class="btn btn-success-custom">
-                            <i class="fas fa-play me-1"></i>
-                            Mulai Scan
-                        </button>
-                        <button id="stop-scan" class="btn btn-danger-custom" style="display: none;">
-                            <i class="fas fa-stop me-1"></i>
-                            Stop Scan
-                        </button>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="manual-input">
-                        <h6>Input Manual</h6>
-                        <p class="small text-muted">Jika tidak bisa scan, masukkan kode secara manual:</p>
-                        <form method="GET">
-                            <div class="input-group">
-                                <input type="text" class="form-control" name="qr" placeholder="Masukkan kode QR">
-                                <button class="btn btn-primary-custom" type="submit">
-                                    <i class="fas fa-search"></i>
-                                </button>
+                    <form method="GET" action="">
+                        <div class="d-flex gap-2 mt-3">
+                            <div class="manual-input">
+                                <h6>Input Manual</h6>
+                                <p class="small text-muted">Jika tidak bisa scan, masukkan kode secara manual:</p>
+                                <form method="GET">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="qr"
+                                            placeholder="Masukkan kode QR">
+                                        <button class="btn btn-primary-custom" type="submit">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Result Section -->
-        <?php if ($meat_info): ?>
-            <div class="result-card">
-                <h4 class="mb-3">
-                    <i class="fas fa-info-circle me-2"></i>
-                    Informasi Pengambilan Daging
-                </h4>
-
-                <div class="info-row">
-                    <span class="fw-semibold">Nama Penerima:</span>
-                    <span><?php echo htmlspecialchars($meat_info['nama_penerima'] ?? 'Tidak diketahui'); ?></span>
-                </div>
-
-                <div class="info-row">
-                    <span class="fw-semibold">NIK:</span>
-                    <span><?php echo htmlspecialchars($meat_info['nik_penerima']); ?></span>
-                </div>
-
-                <div class="info-row">
-                    <span class="fw-semibold">Alamat:</span>
-                    <span><?php echo htmlspecialchars($meat_info['alamat'] ?? 'Tidak diketahui'); ?></span>
-                </div>
-
-                <div class="info-row">
-                    <span class="fw-semibold">Jumlah Daging:</span>
-                    <span><?php echo number_format($meat_info['jumlah_kg'], 1); ?> Kg</span>
-                </div>
-
-                <div class="info-row">
-                    <span class="fw-semibold">Status:</span>
-                    <span
-                        class="status-badge <?php echo $meat_info['status_pengambilan'] == 'sudah' ? 'status-sudah' : 'status-belum'; ?>">
-                        <?php echo $meat_info['status_pengambilan'] == 'sudah' ? 'Sudah Diambil' : 'Belum Diambil'; ?>
-                    </span>
-                </div>
-
-                <?php if ($meat_info['status_pengambilan'] == 'sudah' && $meat_info['tanggal_pengambilan']): ?>
-                    <div class="info-row">
-                        <span class="fw-semibold">Tanggal Pengambilan:</span>
-                        <span><?php echo date('d/m/Y H:i', strtotime($meat_info['tanggal_pengambilan'])); ?></span>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Konfirmasi Button -->
-                <?php if ($meat_info['status_pengambilan'] == 'belum'): ?>
-                    <div class="mt-4 pt-3 border-top">
-                        <h5 class="mb-3">Konfirmasi Pengambilan</h5>
-                        <form method="POST"
-                            onsubmit="return confirm('Apakah Anda yakin ingin mengkonfirmasi pengambilan daging ini?')">
-                            <input type="hidden" name="id_pembagian" value="<?php echo $meat_info['id']; ?>">
-                            <button type="submit" name="confirm_pickup" class="btn btn-success-custom btn-lg">
-                                <i class="fas fa-check me-2"></i>
-                                Konfirmasi Pengambilan
-                            </button>
-                        </form>
-                    </div>
-                <?php else: ?>
-                    <div class="mt-4 pt-3 border-top">
-                        <div class="alert alert-info mb-0">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Daging sudah diambil pada
-                            <?php echo date('d/m/Y H:i', strtotime($meat_info['tanggal_pengambilan'])); ?>
                         </div>
-                    </div>
-                <?php endif; ?>
+                </div>
             </div>
-        <?php elseif (isset($_GET['qr'])): ?>
-            <div class="result-card">
-                <div class="alert alert-warning mb-0">
+            </form>
+<!-- ============================menampilkan data====================================== -->
+            <?php if ($user_data): ?>
+                <table class="table table-bordered mt-4">
+                    <thead class="table-success">
+                        <tr>
+                            <th>NIK</th>
+                            <th>Nama</th>
+                            <th>Jenis Kelamin</th>
+                            <th>Alamat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><?php echo htmlspecialchars($user_data['nik']); ?></td>
+                            <td><?php echo htmlspecialchars($user_data['name']); ?></td>
+                            <td><?php echo htmlspecialchars($user_data['jenis_kelamin']); ?></td>
+                            <td><?php echo htmlspecialchars($user_data['alamat']); ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+            <?php elseif (isset($_GET['qr'])): ?>
+                <div class="alert alert-warning mt-3">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     Data tidak ditemukan untuk kode: <strong><?php echo htmlspecialchars($_GET['qr']); ?></strong>
                 </div>
-            </div>
-        <?php endif; ?>
-    </div>
+            <?php endif; ?>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        let html5QrCode;
+            <!-- Result Section -->
+            <?php if ($meat_info): ?>
+                <div class="result-card">
+                    <h4 class="mb-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Informasi Pengambilan Daging
+                    </h4>
 
-        // Update Google Lens button to open camera
-        document.getElementById('google-lens-btn').addEventListener('click', function (e) {
-            e.preventDefault();
+                    <div class="info-row">
+                        <span class="fw-semibold">Nama Penerima:</span>
+                        <span><?php echo htmlspecialchars($meat_info['nama_penerima'] ?? 'Tidak diketahui'); ?></span>
+                    </div>
 
-            // For mobile devices, try to open the default camera app
-            if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                // Try to open Google Lens if available
-                window.open('google-lens://scan', '_blank');
+                    <div class="info-row">
+                        <span class="fw-semibold">NIK:</span>
+                        <span><?php echo htmlspecialchars($meat_info['nik_penerima']); ?></span>
+                    </div>
 
-                // Fallback: show instructions
-                setTimeout(() => {
-                    alert('Instruksi:\n1. Buka aplikasi Google Lens atau kamera\n2. Arahkan ke QR Code\n3. Salin kode yang muncul\n4. Masukkan di kolom Input Manual');
-                }, 1000);
-            } else {
-                // For desktop, show instructions
-                alert('Instruksi untuk menggunakan Google Lens:\n1. Buka Google Lens di ponsel Anda\n2. Scan QR Code\n3. Salin kode yang didapat\n4. Masukkan di kolom Input Manual di samping');
-            }
-        });
+                    <div class="info-row">
+                        <span class="fw-semibold">Alamat:</span>
+                        <span><?php echo htmlspecialchars($meat_info['alamat'] ?? 'Tidak diketahui'); ?></span>
+                    </div>
 
-        function onScanSuccess(decodedText, decodedResult) {
-            console.log(`Code matched = ${decodedText}`, decodedResult);
+                    <div class="info-row">
+                        <span class="fw-semibold">Jumlah Daging:</span>
+                        <span><?php echo number_format($meat_info['jumlah_kg'], 1); ?> Kg</span>
+                    </div>
 
-            // Stop scanning
-            html5QrCode.stop().then((ignore) => {
-                document.getElementById('start-scan').style.display = 'inline-block';
-                document.getElementById('stop-scan').style.display = 'none';
-            }).catch((err) => {
-                console.log('Error stopping scan:', err);
-            });
+                    <div class="info-row">
+                        <span class="fw-semibold">Status:</span>
+                        <span
+                            class="status-badge <?php echo $meat_info['status_pengambilan'] == 'sudah' ? 'status-sudah' : 'status-belum'; ?>">
+                            <?php echo $meat_info['status_pengambilan'] == 'sudah' ? 'Sudah Diambil' : 'Belum Diambil'; ?>
+                        </span>
+                    </div>
 
-            // Redirect with QR data
-            window.location.href = `scan_qr.php?qr=${encodeURIComponent(decodedText)}`;
-        }
+                    <?php if ($meat_info['status_pengambilan'] == 'sudah' && $meat_info['tanggal_pengambilan']): ?>
+                        <div class="info-row">
+                            <span class="fw-semibold">Tanggal Pengambilan:</span>
+                            <span><?php echo date('d/m/Y H:i', strtotime($meat_info['tanggal_pengambilan'])); ?></span>
+                        </div>
+                    <?php endif; ?>
 
-        function onScanFailure(error) {
-            // Handle scan failure - usually just noise, don't log every failure
-        }
+                    <!-- Konfirmasi Button -->
+                    <?php if ($meat_info['status_pengambilan'] == 'belum'): ?>
+                        <div class="mt-4 pt-3 border-top">
+                            <h5 class="mb-3">Konfirmasi Pengambilan</h5>
+                            <form method="POST"
+                                onsubmit="return confirm('Apakah Anda yakin ingin mengkonfirmasi pengambilan daging ini?')">
+                                <input type="hidden" name="id_pembagian" value="<?php echo $meat_info['id']; ?>">
+                                <button type="submit" name="confirm_pickup" class="btn btn-success-custom btn-lg">
+                                    <i class="fas fa-check me-2"></i>
+                                    Konfirmasi Pengambilan
+                                </button>
+                            </form>
+                        </div>
+                    <?php else: ?>
+                        <div class="mt-4 pt-3 border-top">
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Daging sudah diambil pada
+                                <?php echo date('d/m/Y H:i', strtotime($meat_info['tanggal_pengambilan'])); ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php elseif (isset($_GET['qr'])): ?>
+                <div class="result-card">
+                    <div class="alert alert-warning mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Data tidak ditemukan untuk kode: <strong><?php echo htmlspecialchars($_GET['qr']); ?></strong>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
 
-        document.getElementById('start-scan').addEventListener('click', function () {
-            html5QrCode = new Html5Qrcode("qr-reader");
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            let html5QrCode;
 
-            Html5Qrcode.getCameras().then(devices => {
-                if (devices && devices.length) {
-                    // Use back camera if available
-                    let cameraId = devices[0].id;
-                    if (devices.length > 1) {
-                        // Try to find back camera
-                        for (let device of devices) {
-                            if (device.label.toLowerCase().includes('back') ||
-                                device.label.toLowerCase().includes('rear') ||
-                                device.label.toLowerCase().includes('environment')) {
-                                cameraId = device.id;
-                                break;
-                            }
-                        }
-                    }
+            function onScanSuccess(decodedText, decodedResult) {
+                console.log(`Code matched = ${decodedText}`, decodedResult);
 
-                    html5QrCode.start(
-                        cameraId,
-                        {
-                            fps: 10,
-                            qrbox: { width: 250, height: 250 }
-                        },
-                        onScanSuccess,
-                        onScanFailure
-                    ).then(() => {
-                        document.getElementById('start-scan').style.display = 'none';
-                        document.getElementById('stop-scan').style.display = 'inline-block';
-                    }).catch((err) => {
-                        console.log('Error starting scan:', err);
-                        alert('Tidak dapat mengakses kamera. Pastikan Anda telah memberikan izin akses kamera.');
-                    });
-                }
-            }).catch(err => {
-                console.log('Error getting cameras:', err);
-                alert('Tidak dapat mengakses kamera. Gunakan input manual sebagai alternatif.');
-            });
-        });
-
-        document.getElementById('stop-scan').addEventListener('click', function () {
-            if (html5QrCode) {
+                // Stop scanning
                 html5QrCode.stop().then((ignore) => {
                     document.getElementById('start-scan').style.display = 'inline-block';
                     document.getElementById('stop-scan').style.display = 'none';
                 }).catch((err) => {
                     console.log('Error stopping scan:', err);
                 });
+
+                // Redirect with QR data
+                window.location.href = `scan_qr.php?qr=${encodeURIComponent(decodedText)}`;
             }
-        });
-    </script>
+
+            function onScanFailure(error) {
+                // Handle scan failure - usually just noise, don't log every failure
+            }
+
+            document.getElementById('start-scan').addEventListener('click', function () {
+                html5QrCode = new Html5Qrcode("qr-reader");
+
+                Html5Qrcode.getCameras().then(devices => {
+                    if (devices && devices.length) {
+                        // Use back camera if available
+                        let cameraId = devices[0].id;
+                        if (devices.length > 1) {
+                            // Try to find back camera
+                            for (let device of devices) {
+                                if (device.label.toLowerCase().includes('back') ||
+                                    device.label.toLowerCase().includes('rear') ||
+                                    device.label.toLowerCase().includes('environment')) {
+                                    cameraId = device.id;
+                                    break;
+                                }
+                            }
+                        }
+
+                        html5QrCode.start(
+                            cameraId,
+                            {
+                                fps: 10,
+                                qrbox: { width: 250, height: 250 }
+                            },
+                            onScanSuccess,
+                            onScanFailure
+                        ).then(() => {
+                            document.getElementById('start-scan').style.display = 'none';
+                            document.getElementById('stop-scan').style.display = 'inline-block';
+                        }).catch((err) => {
+                            console.log('Error starting scan:', err);
+                            alert('Tidak dapat mengakses kamera. Pastikan Anda telah memberikan izin akses kamera.');
+                        });
+                    }
+                }).catch(err => {
+                    console.log('Error getting cameras:', err);
+                    alert('Tidak dapat mengakses kamera. Gunakan input manual sebagai alternatif.');
+                });
+            });
+
+            document.getElementById('stop-scan').addEventListener('click', function () {
+                if (html5QrCode) {
+                    html5QrCode.stop().then((ignore) => {
+                        document.getElementById('start-scan').style.display = 'inline-block';
+                        document.getElementById('stop-scan').style.display = 'none';
+                    }).catch((err) => {
+                        console.log('Error stopping scan:', err);
+                    });
+                }
+            });
+        </script>
 
 
 </body>

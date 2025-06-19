@@ -30,7 +30,7 @@ $result = mysqli_query($conn, $query);
             display: flex;
             justify-content: center;
             min-height: 100vh;
-            overflow: hidden;
+            overflow: auto;
         }
         .container {
             max-width: 900px;
@@ -92,7 +92,7 @@ $result = mysqli_query($conn, $query);
             border-collapse: separate;
             background-color: white;
             border-radius: 15px;
-            overflow: hidden;
+            overflow: auto;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
         th, td {
