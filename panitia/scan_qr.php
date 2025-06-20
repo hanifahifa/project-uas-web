@@ -69,7 +69,7 @@ if (isset($_GET['qr'])) {
                     <button id="stop-scan" class="btn btn-danger" style="display: none;">Stop Scanning</button>
                 </div>
                 <hr>
-                <h6>Input Manual</h6>
+                <h6>Input NIK disini untuk cek manual</h6>
                 <form method="GET" class="row g-2">
                     <div class="col-10">
                         <input type="text" name="qr" class="form-control" placeholder="Masukkan kode QR" required>

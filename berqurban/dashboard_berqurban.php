@@ -56,7 +56,288 @@ $status_pengambilan = $data_daging ? ($data_daging['status_pengambilan'] == 'sud
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Styling remains the same as the previous code */
+        body {
+            background: #f7f7f7;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 20px 30px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .header-section h1 {
+            font-size: 1.5em;
+            margin: 0;
+        }
+
+        .welcome-text p {
+            margin: 0;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .kembali-btn, .logout-btn {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+
+        .kembali-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .kembali-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .logout-btn {
+            background-color: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.4);
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(220, 53, 69, 0.3);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .user-info {
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .user-info h4 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info .icon {
+            margin-right: 10px;
+        }
+
+        .user-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .user-detail:last-child {
+            border-bottom: none;
+        }
+
+        .user-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .user-value {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #28a745;
+        }
+
+        .dashboard-card h5 {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            color: #333;
+        }
+
+        .dashboard-card .icon {
+            margin-right: 10px;
+            color: #28a745;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .price-display {
+            font-weight: bold;
+            color: #28a745;
+            font-size: 1.1em;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+
+        .badge-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .qr-container {
+            text-align: center;
+            padding: 15px 0;
+        }
+
+        .qr-container img {
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .qr-description {
+            color: #666;
+            font-size: 0.9em;
+            margin: 0;
+        }
+
+        .info-section {
+            width: 100%;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .info-section h3 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-section .icon {
+            margin-right: 10px;
+            color: #28a745;
+        }
+
+        .alert-modern {
+            background: #f8f9fa;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .alert-modern h6 {
+            margin-bottom: 10px;
+            color: #28a745;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .alert-modern h6 i {
+            margin-right: 8px;
+        }
+
+        .alert-modern p {
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .header-section {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .header-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -68,14 +349,16 @@ $status_pengambilan = $data_daging ? ($data_daging['status_pengambilan'] == 'sud
                 <p>Selamat datang, <?php echo htmlspecialchars($user['name'] ?? 'Nama Tidak Ditemukan'); ?></p>
             </div>
 
-             <!-- Kembali Button -->            
-            <a href="../Dashboard_Utama/dashboard.php" class="kembali-btn">
-                <i class="fas fa-arrow-left"></i> Kembali
-            </a>
+            <div class="header-buttons">
+                <!-- Kembali Button -->            
+                <a href="../Dashboard_Utama/dashboard.php" class="kembali-btn">
+                    <i class="fas fa-arrow-left"></i> Kembali
+                </a>
 
-            <a href="../logout.php" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
+                <a href="../logout.php" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
         </div>
 
         <!-- Data Diri Pengguna -->

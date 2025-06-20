@@ -63,7 +63,266 @@ if ($user) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Styling remains the same as the previous code */
+        body {
+            background: #f7f7f7;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 20px 30px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .header-section h1 {
+            font-size: 1.5em;
+            margin: 0;
+        }
+
+        .welcome-text p {
+            margin: 0;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .kembali-btn, .logout-btn {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+
+        .kembali-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .kembali-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .logout-btn {
+            background-color: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.4);
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(220, 53, 69, 0.3);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .user-info-card {
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .user-info-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info-card .icon {
+            margin-right: 10px;
+        }
+
+        .user-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .user-detail:last-child {
+            border-bottom: none;
+        }
+
+        .user-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .user-value {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .main-grid {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-modern {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 48%;
+            text-align: center;
+        }
+
+        .card-modern h3 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-modern .icon {
+            margin-right: 10px;
+        }
+
+        .meat-weight {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #28a745;
+            margin: 10px 0;
+        }
+
+        .meat-subtitle {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .qr-container {
+            margin-top: 10px;
+        }
+
+        .qr-container img {
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .info-section {
+            width: 100%;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .info-section h3 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-section .icon {
+            margin-right: 10px;
+        }
+
+        .alert-modern {
+            background: #f8f9fa;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .alert-modern h6 {
+            margin-bottom: 10px;
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .alert-modern ul {
+            margin-bottom: 0;
+            padding-left: 20px;
+        }
+
+        .alert-modern li {
+            margin-bottom: 5px;
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .header-section {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .header-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .main-grid {
+                flex-direction: column;
+            }
+
+            .card-modern {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 
@@ -75,14 +334,17 @@ if ($user) {
                 <h1>Dashboard Warga</h1>
                 <p>Selamat datang, <?php echo htmlspecialchars($user['name']); ?></p>
             </div>
-             <!-- Kembali Button -->            
-            <a href="../Dashboard_Utama/dashboard.php" class="kembali-btn">
-                <i class="fas fa-arrow-left"></i> Kembali
-            </a>
 
-            <a href="../logout.php" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
+            <div class="header-buttons">
+                <!-- Kembali Button -->            
+                <a href="../Dashboard_Utama/dashboard.php" class="kembali-btn">
+                    <i class="fas fa-arrow-left"></i> Kembali
+                </a>
+
+                <a href="../logout.php" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
         </div>
 
         <!-- User Information Card -->
